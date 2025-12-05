@@ -153,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script src="assets/js/app.js" defer></script>
 
-<!-- ВСТАВЬ ЭТО ПРЯМО В university.html ПЕРЕД СКРИПТОМ PAGE LOGIC -->
 <script>
 /* Встроенная локальная база университетов — используется, если fetch недоступен */
 window.UNIVERSITIES_DB = {
@@ -231,78 +230,248 @@ window.UNIVERSITIES_DB = {
   ]
 };
 </script>
+<!-- ВСТАВЬ ЭТО ПЕРЕД СКРИПТОМ ЗАГРУЗКИ/PAGE LOGIC В university.html -->
+<script>
+/* Встроенная локальная база университетов.
+   Это временное и безопасное решение — работает при открытии файлов по file://
+   (устраняет проблему CORS / блокировку fetch). */
+window.UNIVERSITIES_DB = {
+  "universities": [
+    {
+      "id": "kznu",
+      "name": "Казахский национальный университет им. аль-Фараби (КазНУ)",
+      "city": "Алматы",
+      "rating": 92,
+      "short_desc": "Крупнейший классический университет Казахстана, сильные программы в естественных и гуманитарных науках.",
+      "long_desc": "КазНУ — ведущий национальный университет с богатой историей и международными партнёрами.",
+      "student_count": 20000,
+      "faculty_count": 2000,
+      "programs_count": 180,
+      "contact": { "phone": "+7 (727) 377-33-33", "email": "info@kaznu.edu.kz", "address": "пр. Аль-Фараби, 71, Алматы" },
+      "gallery": ["assets/images/kaznu-1.jpg"],
+      "partners": [{"partner_name":"University of Cambridge","country":"UK"}],
+      "tour": ""
+    },
+    {
+      "id": "aues",
+      "name": "Алматинский университет энергетики и связи (АУЭС)",
+      "city": "Алматы",
+      "rating": 87,
+      "short_desc": "Университет с сильными программами в энергетике, телекомах и прикладных ИТ.",
+      "long_desc": "АУЭС готовит инженеров и специалистов для энергетической и телеком-индустрии.",
+      "student_count": 8000,
+      "faculty_count": 700,
+      "programs_count": 60,
+      "contact": { "phone": "+7 (727) 323-11-75", "email": "aues@aues.kz", "address": "ул. Байтурсынова, 126/1, Алматы" },
+      "gallery": ["assets/images/aues-1.jpg"],
+      "partners": [{"partner_name":"Anhalt University","country":"Germany"}],
+      "tour": ""
+    },
+    {
+      "id": "kbtu",
+      "name": "Казахстанско-Британский технический университет (КБТУ)",
+      "city": "Алматы",
+      "rating": 90,
+      "short_desc": "Технический университет с англоязычными программами и тесными связями с индустрией.",
+      "long_desc": "КБТУ фокусируется на инженерии, нефти и газе, ИТ и менеджменте.",
+      "student_count": 5000,
+      "faculty_count": 400,
+      "programs_count": 50,
+      "contact": { "phone": "+7 (727) 357-42-42", "email": "info@kbtu.kz", "address": "ул. Толе Би, 59, Алматы" },
+      "gallery": ["assets/images/kbtu-1.jpg"],
+      "partners": [{"partner_name":"London School of Economics","country":"UK"}],
+      "tour": ""
+    },
+    {
+      "id": "iitu",
+      "name": "Международный университет информационных технологий (МУИТ)",
+      "city": "Алматы",
+      "rating": 88,
+      "short_desc": "Университет с акцентом на ИТ-образование и международные программы.",
+      "long_desc": "МУИТ предлагает сильные программы по программной инженерии и кибербезопасности.",
+      "student_count": 6000,
+      "faculty_count": 500,
+      "programs_count": 40,
+      "contact": { "phone": "+7 (727) 320-00-00", "email": "reception@iitu.edu.kz", "address": "ул. Манаса, 34/1, Алматы" },
+      "gallery": ["assets/images/iitu-1.jpg"],
+      "partners": [{"partner_name":"KAIST","country":"South Korea"}],
+      "tour": ""
+    },
+    {
+      "id": "aitu",
+      "name": "Astana IT University (АйТУ)",
+      "city": "Астана",
+      "rating": 85,
+      "short_desc": "Современный ИТ-вуз с фокусом на AI, Data Science и цифровые трансформации.",
+      "long_desc": "АйТУ готовит специалистов для индустрии ИТ и цифрового сектора.",
+      "student_count": 3000,
+      "faculty_count": 250,
+      "programs_count": 30,
+      "contact": { "phone": "+7 (7172) 645-710", "email": "info@astanait.edu.kz", "address": "пр. Мәңгілік Ел, Астана" },
+      "gallery": ["assets/images/aitu-1.jpg"],
+      "partners": [{"partner_name":"SAP University Alliances","country":"Germany"}],
+      "tour": ""
+    }
+  ]
+};
+</script>
 
-<!-- PAGE LOGIC — обработка с поддержкой отсутствия ?id=... -->
+<!-- REPLACE PAGE LOGIC: robust loader for university.html -->
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  const params = new URLSearchParams(location.search);
-  const id = params.get("id");
-
-  // helper: get DB either from window var or fetch
-  async function loadDB() {
-    if (window.UNIVERSITIES_DB && Array.isArray(window.UNIVERSITIES_DB.universities)) {
-      return window.UNIVERSITIES_DB;
-    }
-    const resp = await fetch('assets/data/universities.json');
-    if (!resp.ok) throw new Error('Не удалось загрузить локальные данные');
-    return await resp.json();
+  // helper to show message on page
+  function showMessage(html) {
+    const container = document.getElementById('uniContainer');
+    container.innerHTML = "<div class='card'><p class='muted-note'>" + html + "</p></div>";
   }
 
+  // get id from URL, normalize
+  const params = new URLSearchParams(location.search);
+  let id = params.get("id");
+  if (id) id = decodeURIComponent(String(id)).trim();
+
+  console.log("[university.html] requested id:", id);
+
+  // if no id => show list of universities (linking to profiles)
+  if (!id) {
+    try {
+      // try DataHub list first
+      if (window.DataHub && typeof DataHub.fetchUniversities === "function") {
+        const list = await DataHub.fetchUniversities();
+        if (Array.isArray(list) && list.length) {
+          document.getElementById('uniContainer').innerHTML = "";
+          const header = document.createElement('div');
+          header.className = 'card';
+          header.innerHTML = '<h2>Выберите университет</h2><p class="muted-note">Нажмите на вуз, чтобы открыть профиль.</p>';
+          document.getElementById('uniContainer').appendChild(header);
+          const grid = document.createElement('div');
+          grid.style.display = 'grid';
+          grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(300px,1fr))';
+          grid.style.gap = '12px';
+          grid.style.marginTop = '12px';
+          list.forEach(u => {
+            const c = document.createElement('div');
+            c.className = 'card';
+            c.innerHTML = `
+              <a href="university.html?id=${encodeURIComponent(u.id)}" style="text-decoration:none;color:inherit">
+                <strong>${u.name}</strong><div class="muted-note">${u.city || ''} · рейтинг: ${u.rating ?? '—'}</div>
+                <p class="muted-note">${(u.short_desc||'').substring(0,150)}</p>
+              </a>`;
+            grid.appendChild(c);
+          });
+          document.getElementById('uniContainer').appendChild(grid);
+          return;
+        }
+      }
+
+      // if DataHub not present or empty, attempt to load local JSON
+      const resp = await fetch('assets/data/universities.json');
+      if (resp.ok) {
+        const db = await resp.json();
+        const list = db.universities || [];
+        if (list.length) {
+          document.getElementById('uniContainer').innerHTML = "";
+          const header = document.createElement('div');
+          header.className = 'card';
+          header.innerHTML = '<h2>Выберите университет</h2><p class="muted-note">Нажмите на вуз, чтобы открыть профиль.</p>';
+          document.getElementById('uniContainer').appendChild(header);
+          const grid = document.createElement('div');
+          grid.style.display = 'grid';
+          grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(300px,1fr))';
+          grid.style.gap = '12px';
+          grid.style.marginTop = '12px';
+          list.forEach(u => {
+            const c = document.createElement('div');
+            c.className = 'card';
+            c.innerHTML = `
+              <a href="university.html?id=${encodeURIComponent(u.id)}" style="text-decoration:none;color:inherit">
+                <strong>${u.name}</strong><div class="muted-note">${u.city || ''} · рейтинг: ${u.rating ?? '—'}</div>
+                <p class="muted-note">${(u.short_desc||'').substring(0,150)}</p>
+              </a>`;
+            grid.appendChild(c);
+          });
+          document.getElementById('uniContainer').appendChild(grid);
+          return;
+        }
+      }
+
+    } catch (err) {
+      console.error("Ошибка при загрузке списка вузов:", err);
+      showMessage("Не удалось загрузить список университетов.");
+      return;
+    }
+
+    showMessage("Список университетов пуст.");
+    return;
+  }
+
+  // -- if id present: try to load university data from multiple sources robustly --
   try {
-    const db = await loadDB();
-    const list = Array.isArray(db.universities) ? db.universities : [];
-
-    if (!id) {
-      // show list
-      const container = document.getElementById('uniContainer');
-      container.innerHTML = '';
-      const headerCard = document.createElement('div');
-      headerCard.className = 'card';
-      headerCard.innerHTML = '<h2>Выберите университет</h2><p class="muted-note">Кликните на университет, чтобы открыть его профиль.</p>';
-      container.appendChild(headerCard);
-      const grid = document.createElement('div');
-      grid.style.display = 'grid';
-      grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(300px,1fr))';
-      grid.style.gap = '16px';
-      grid.style.marginTop = '12px';
-      list.forEach(u => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        const short = (u.short_desc||'').substring(0,160);
-        div.innerHTML = `
-          <div style="display:flex;gap:14px;align-items:center;">
-            <div style="width:72px;height:72px;border-radius:10px;background:#f0f6ff;display:flex;align-items:center;justify-content:center;font-weight:700;">
-              ${(u.name||' ')[0].toUpperCase()}
-            </div>
-            <div style="flex:1">
-              <a href="university.html?id=${encodeURIComponent(u.id)}" style="font-size:18px;font-weight:700;color:var(--text);text-decoration:none;">
-                ${u.name}
-              </a>
-              <div class="muted-note" style="margin-top:6px">${u.city || ''} · рейтинг: ${u.rating ?? '—'}</div>
-              <div class="muted-note" style="margin-top:8px">${short}</div>
-            </div>
-          </div>
-        `;
-        grid.appendChild(div);
-      });
-      container.appendChild(grid);
-      return;
+    // 1) Try DataHub.fetchUniversityById if available
+    if (window.DataHub && typeof DataHub.fetchUniversityById === "function") {
+      console.log("[university.html] trying DataHub.fetchUniversityById...");
+      const uni = await DataHub.fetchUniversityById(id);
+      if (uni) {
+        console.log("[university.html] found via DataHub:", uni.id);
+        renderUniversity(uni);
+        return;
+      }
+      console.warn("[university.html] DataHub didn't return university for id:", id);
     }
 
-    // find specific
-    const uni = list.find(u => u.id === id);
-    if (!uni) {
-      document.getElementById("uniContainer").innerHTML = "<div class='card'><p class='muted-note'>Университет не найден (проверь ?id=...)</p></div>";
-      return;
+    // 2) Try window.UNIVERSITIES_DB (embedded)
+    if (window.UNIVERSITIES_DB && Array.isArray(window.UNIVERSITIES_DB.universities)) {
+      const found = window.UNIVERSITIES_DB.universities.find(u => String(u.id) === String(id));
+      if (found) { renderUniversity(found); return; }
+      console.warn("[university.html] window.UNIVERSITIES_DB has no entry for id:", id);
     }
 
-    // Fill UI
+    // 3) Try local JSON file
+    console.log("[university.html] fetching assets/data/universities.json");
+    const resp = await fetch('assets/data/universities.json');
+    if (resp.ok) {
+      const db = await resp.json();
+      const u = (db.universities || []).find(x => String(x.id) === String(id));
+      if (u) { renderUniversity(u); return; }
+      console.warn("[university.html] assets/data/universities.json has no entry for id:", id);
+    } else {
+      console.warn("[university.html] assets/data/universities.json fetch status:", resp.status);
+    }
+
+    // 4) Last resort: try backend API path (if your project had one)
+    try {
+      const apiResp = await fetch(`/api/universities/${encodeURIComponent(id)}`);
+      if (apiResp.ok) {
+        const uni = await apiResp.json();
+        if (uni && uni.id) { renderUniversity(uni); return; }
+      } else {
+        console.warn("[university.html] backend /api/universities returned status", apiResp.status);
+      }
+    } catch (e) {
+      console.warn("[university.html] backend fetch failed", e);
+    }
+
+    // nothing found
+    console.error("University not found for id:", id);
+    showMessage("Университет не найден (проверь параметр ?id=...). Открой консоль разработчика для деталей.");
+    return;
+
+  } catch (err) {
+    console.error("Ошибка при загрузке данных университета:", err);
+    showMessage("Ошибка при загрузке данных университета. Смотри консоль.");
+    return;
+  }
+
+  // ---- helper: render university object into DOM ----
+  function renderUniversity(uni) {
+    // basic fill (keeps your existing DOM structure ids)
     document.getElementById("uniName").textContent = uni.name || "—";
     document.getElementById("uniCity").textContent = "Город: " + (uni.city || "—");
     document.getElementById("uniRating").textContent = "Рейтинг: " + (uni.rating ?? "—");
     document.getElementById("uniShort").textContent = uni.short_desc || "Нет краткого описания.";
     document.getElementById("uniLong").textContent = uni.long_desc || "Нет подробного описания.";
-    document.getElementById("uniLogo").textContent = (uni.name || 'U')[0].toUpperCase();
+    document.getElementById("uniLogo").textContent = (uni.name||'U')[0].toUpperCase();
+
     document.getElementById("numStudents").textContent = uni.student_count ?? "—";
     document.getElementById("numFaculty").textContent = uni.faculty_count ?? "—";
     document.getElementById("numPrograms").textContent = uni.programs_count ?? "—";
@@ -310,9 +479,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Contact
     let c = "";
     if (uni.contact) {
-      const obj = (typeof uni.contact === "string") ? (() => {
-        try { return JSON.parse(uni.contact); } catch { return null; }
-      })() : uni.contact;
+      const obj = (typeof uni.contact === "string") ? (() => { try { return JSON.parse(uni.contact); } catch { return null; } })() : uni.contact;
       if (obj) {
         c = `${obj.phone ? `<div>📞 ${obj.phone}</div>` : ""}${obj.email ? `<div>✉️ <a href="mailto:${obj.email}">${obj.email}</a></div>` : ""}${obj.address ? `<div>📍 ${obj.address}</div>` : ""}`;
       } else c = String(uni.contact);
@@ -336,19 +503,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     } else pl.innerHTML = "<p class='muted-note'>Партнёров нет.</p>";
 
+    // optional 3D tour
     if (uni.tour) {
-      const tourBlock = document.createElement('div'); tourBlock.style.marginTop='14px';
+      const tourBlock = document.createElement('div');
+      tourBlock.style.marginTop = '14px';
       tourBlock.innerHTML = `<a class="btn ghost" href="${uni.tour}" target="_blank">Посмотреть 3D-тур</a>`;
       gal.parentElement.appendChild(tourBlock);
     }
-
-  } catch (err) {
-    console.error(err);
-    document.getElementById("uniContainer").innerHTML = "<div class='card'><p class='muted-note'>Ошибка: не удалось загрузить данные университетов.</p></div>";
   }
 
 });
 </script>
+
 
 
 </body>

@@ -1,201 +1,692 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Приём — DataHub ВУЗ-ов «РК»</title>
 
   <link rel="stylesheet" href="assets/css/styles.css">
-</head>
 
+  <style>
+    /* Локальные правки оформления страницы приёма */
+    .admission-hero { padding: 18px 0; }
+    .admission-grid { display:grid; grid-template-columns: 1fr 360px; gap:18px; }
+    @media (max-width: 980px) { .admission-grid { grid-template-columns: 1fr; } }
+
+    .card .section-title { margin-top: 6px; font-size:18px; font-weight:700; }
+    .muted-note { color:var(--muted); }
+
+    .form-row { margin-bottom:12px; }
+    label.field-label { display:block; font-weight:600; margin-bottom:6px; color:var(--text); }
+    select, input[type="text"], input[type="email"], textarea {
+      background: var(--surface-light);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 12px 14px;
+      width:100%;
+      color:var(--text);
+      box-sizing:border-box;
+    }
+    .small-muted { color:var(--muted); font-size:13px; }
+
+    .req-list { margin:8px 0 0 0; padding-left:20px; color:var(--muted); }
+    .status-note { margin:8px 0; padding:8px 12px; border-radius:8px; background:rgba(110,231,183,0.08); color: #064; display:none; }
+
+    .btn-row { display:flex; gap:12px; align-items:center; margin-top:10px; }
+    .toast { position:fixed; right:20px; bottom:20px; background:#0b1220; color:#fff; padding:12px 16px; border-radius:10px; box-shadow:0 8px 30px rgba(11,18,32,0.5); display:none; z-index:99999; }
+
+    .sidebar-note { font-size:14px; color:var(--muted); }
+    .hint { font-size:13px; color:var(--muted); margin-top:6px; }
+  </style>
+</head>
 <body>
 
-<!-- ===========================================================
-     FIXED HEADER (единый для всех страниц)
-=========================================================== -->
-<header class="site-header">
+<!-- HEADER -->
+<header class="site-header" role="banner" aria-label="Верхнее меню">
   <div class="header-inner">
-
-    <!-- logo -->
-    <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
-      <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
-          <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"></rect>
-          <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
+    <a href="index.html" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
+      <svg width="44" height="44" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="1" y="1" width="22" height="22" rx="5" fill="#0b1220"></rect>
+        <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
       <div style="line-height:1;">
         <div style="font-weight:700; color:var(--text); font-size:16px;">DataHub ВУЗ-ов «РК»</div>
         <div style="font-size:12px; color:var(--muted);">Каталог университетов</div>
       </div>
     </a>
 
-    <!-- navigation -->
-    <nav class="main-nav">
-      <a href="index.html" class="nav-link">Главная</a>
-      <a href="university.html" class="nav-link">Об университете</a>
-      <a href="programs.html" class="nav-link">Академ. программы</a>
-      <a href="admission.html" class="nav-link">Приём</a>
-      <a href="compare.html" class="nav-link">Сравнение</a>
-      <a href="partners.html" class="nav-link">Партнёры</a>
-      <a href="tour.html" class="nav-link">3D-тур</a>
+    <nav class="main-nav" aria-label="Главная навигация">
+      <a class="nav-link" href="index.html">Главная</a>
+      <a class="nav-link" href="university.html">Об университете</a>
+      <a class="nav-link" href="programs.html">Академ. программы</a>
+      <a class="nav-link active" href="admission.html">Приём</a>
+      <a class="nav-link" href="compare.html">Сравнение</a>
+      <a class="nav-link" href="partners.html">Партнёры</a>
+      <a class="nav-link" href="tour.html">3D-тур</a>
     </nav>
 
-    <!-- CTA -->
     <div style="display:flex; gap:10px; align-items:center;">
       <a href="admission.html" class="btn primary">Подать заявление</a>
-
-      <button class="burger" id="navBurger" type="button">
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;border-radius:2px"></span>
+      <button class="burger" id="navBurger" type="button" aria-label="Открыть меню">
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;"></span>
       </button>
     </div>
-
   </div>
 </header>
 
-<!-- JS: mobile menu + active link + header spacing -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
+<main class="main-content" role="main">
+  <section class="card admission-hero" aria-labelledby="admissionTitle">
+    <h1 id="admissionTitle" style="margin:0 0 8px 0;">Приём в университеты</h1>
+    <p class="lead">Узнайте требования, сроки подачи документов и доступные стипендии. Заполняйте заявку онлайн — она сохранится в вашем браузере или будет отправлена на сервер (когда API появится).</p>
+  </section>
 
-  // highlight active menu item
-  const path = location.pathname.split('/').pop() || "index.html";
-  document.querySelectorAll(".main-nav .nav-link").forEach(a => {
-    if (a.getAttribute("href") === path) a.classList.add("active");
-  });
+  <section class="card" style="margin-top:14px;">
+    <div class="admission-grid">
+      <!-- левый столбец: форма и данные -->
+      <div>
+        <h3>Требования к поступлению</h3>
+        <div id="admissionStatus" class="status-note"></div>
+        <div id="requirementsBlock">
+          <p class="small-muted">Выберите университет и программу, чтобы увидеть требования.</p>
+          <ul id="reqList" class="req-list"><li>—</li></ul>
+        </div>
 
-  // burger
-  const burger = document.getElementById("navBurger");
-  const nav = document.querySelector(".main-nav");
+        <hr style="margin:18px 0; border:none; border-top:1px solid rgba(0,0,0,0.06)">
 
-  burger.addEventListener("click", () => {
-    nav.classList.toggle("mobile-open");
-    nav.style.display = nav.classList.contains("mobile-open") ? "flex" : "";
-  });
+        <h3>Необходимые документы</h3>
+        <div id="docsBlock" class="small-muted">
+          <ul id="docsList" class="req-list">
+            <li>Загрузка...</li>
+          </ul>
+        </div>
 
-  document.addEventListener("click", (e) => {
-    if (window.innerWidth <= 980 && nav.classList.contains("mobile-open")) {
-      if (!nav.contains(e.target) && !burger.contains(e.target)) {
-        nav.classList.remove("mobile-open");
-      }
-    }
-  });
+        <hr style="margin:18px 0; border:none; border-top:1px solid rgba(0,0,0,0.06)">
 
-  // adjust body padding to header height
-  function adjustPad() {
-    const h = document.querySelector(".site-header").getBoundingClientRect().height;
-    document.body.style.paddingTop = h + "px";
-  }
-  adjustPad();
-  window.addEventListener("resize", adjustPad);
+        <h3>Сроки подачи заявлений</h3>
+        <div id="deadlines" class="small-muted">Загрузка сроков...</div>
 
-});
-</script>
+        <hr style="margin:18px 0; border:none; border-top:1px solid rgba(0,0,0,0.06)">
 
-<!-- ===========================================================
-     MAIN CONTENT
-=========================================================== -->
-<main class="main-content">
+        <h3>Стипендии и гранты</h3>
+        <div id="scholarships" class="small-muted">Загрузка данных о финансировании...</div>
 
-  <div class="card">
-    <h2 style="margin-bottom:6px;">Приём в университеты</h2>
-    <p class="muted-note">Узнайте требования, сроки подачи документов и доступные стипендии.</p>
-  </div>
+        <hr style="margin:18px 0; border:none; border-top:1px solid rgba(0,0,0,0.06)">
 
-  <div class="card">
-    <h3>Требования к поступлению</h3>
-    <p id="reqText" class="muted-note">Загрузка требований...</p>
+        <h3>Подать заявление онлайн</h3>
+        <form id="applyForm" novalidate>
+          <div class="form-row">
+            <label class="field-label" for="selUni">Выберите университет</label>
+            <select id="selUni" required>
+              <option value="">Загрузка университетов...</option>
+            </select>
+          </div>
 
-    <hr>
+          <div class="form-row">
+            <label class="field-label" for="selProgram">Выберите программу</label>
+            <select id="selProgram" required>
+              <option value="">Сначала выберите университет</option>
+            </select>
+          </div>
 
-    <h3>Необходимые документы</h3>
-    <ul id="docsList" class="muted-note">
-      <li>Загрузка...</li>
-    </ul>
+          <div class="form-row">
+            <label class="field-label" for="fullName">ФИО</label>
+            <input id="fullName" type="text" placeholder="Ваши ФИО" required>
+          </div>
 
-    <hr>
+          <div class="form-row">
+            <label class="field-label" for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com" required>
+          </div>
 
-    <h3>Сроки подачи заявлений</h3>
-    <p id="datesText" class="muted-note">Загрузка сроков...</p>
+          <div class="form-row">
+            <label class="field-label" for="phone">Телефон (опционально)</label>
+            <input id="phone" type="text" placeholder="+7 (7xx) xxx-xx-xx">
+          </div>
 
-    <hr>
+          <div class="form-row">
+            <label class="field-label" for="message">Комментарий (опционально)</label>
+            <textarea id="message" rows="4" placeholder="Коротко опишите вашу ситуацию или вопрос"></textarea>
+          </div>
 
-    <h3>Стипендии и гранты</h3>
-    <p id="grantsText" class="muted-note">Загрузка данных о финансировании...</p>
+          <div class="btn-row">
+            <button type="submit" class="btn primary">Отправить заявление</button>
+            <button type="button" id="resetForm" class="btn ghost">Сброс</button>
+            <div id="formNote" class="hint"></div>
+          </div>
+        </form>
+      </div>
 
-    <hr>
+      <!-- правый столбец: подсказки и быстрый доступ -->
+      <aside>
+        <div class="card" style="margin-bottom:12px;">
+          <h4>Быстрый доступ</h4>
+          <div class="sidebar-note">
+            <p>Выберите университет в форме — программа и требования подгрузятся автоматически.</p>
+            <p class="hint">Если вы открыли страницу по ссылке university.html?id=..., нажмите "Подать заявление" возле интересующего университета — параметры передадутся автоматически.</p>
+          </div>
+        </div>
 
-    <h3>Подать заявление онлайн</h3>
-
-    <form id="applyForm" style="margin-top:10px;">
-      <input name="fullname" type="text" placeholder="Ваше ФИО" required>
-      <input name="email" type="email" placeholder="Email" required>
-      <input name="program" type="text" placeholder="Направление подготовки" required>
-      <button class="btn primary" type="submit">Отправить заявление</button>
-    </form>
-
-    <p id="applyStatus" class="muted-note" style="margin-top:10px;"></p>
-  </div>
-
+        <div class="card">
+          <h4>Помощь</h4>
+          <p class="sidebar-note">Контакты: <a href="mailto:info@datahub.kz">info@datahub.kz</a></p>
+          <p class="hint">Нужна помощь с документами или программой — напишите в комментарии при подаче заявки.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
 </main>
 
-<!-- ===========================================================
-     FOOTER
-=========================================================== -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div>
-      <strong>DataHub ВУЗ-ов «РК»</strong><br>
-      <span class="small muted-note">Контакты: info@datahub.kz</span>
-    </div>
-    <div class="small muted-note">
-      Политика конфиденциальности · Помощь
-    </div>
+    <div><strong>DataHub ВУЗ-ов «РК»</strong><br><span class="small muted-note">Контакты: <a href="mailto:info@datahub.kz">info@datahub.kz</a></span></div>
+    <div class="small-muted">Политика конфиденциальности · Помощь</div>
   </div>
 </footer>
 
-<script src="assets/js/app.js"></script>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/app.js" defer></script>
 
 <script>
-// Fetch admission info
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const data = await DataHub.fetchAdmissionInfo();
+(function(){
+  if (window.DataHub && typeof DataHub.fetchUniversities === 'function') {
+    // DataHub уже определён — ничего не делаем
+    return;
+  }
 
-    document.getElementById("reqText").textContent = data.requirements || "Нет данных.";
-    document.getElementById("datesText").textContent = data.dates || "Нет данных.";
-    document.getElementById("grantsText").textContent = data.grants || "Нет данных.";
+  if (!window.UNIVERSITIES_DB) {
+    window.UNIVERSITIES_DB = {
+      "universities": [
+        {
+          "id": "kznu",
+          "name": "Казахский национальный университет им. аль-Фараби (КазНУ)",
+          "city": "Алматы",
+          "rating": 92,
+          "short_desc": "Классический университет с сильными программами в естественных и гуманитарных науках.",
+          "student_count": 20000,
+          "faculty_count": 2000,
+          "programs_count": 180,
+          "contact": { "phone": "+7 (727) 377-33-33", "email": "info@kaznu.edu.kz", "address": "пр. Аль-Фараби, 71, Алматы" },
+          "programs": [
+            { "id":"kznu_b_ph", "title":"Физика (Бакалавриат)", "level":"bachelor", "lang":"ru" },
+            { "id":"kznu_m_am", "title":"Прикладная математика (Магистратура)", "level":"master", "lang":"ru" }
+          ],
+          "admission": {
+            "documents":[
+              "Аттестат / диплом (оригинал и копии)",
+              "Паспорт / ИИН",
+              "Фотографии 3×4",
+              "Результаты ЕНТ / КНТ (при необходимости)",
+              "Медицинская справка формы 075/086 (если требуется)"
+            ],
+            "deadlines":{
+              "bachelor":"Подача документов: 20.06.2025 – 31.08.2025. Конкурс госгрантов проходит в июле; зачисление — в августе.",
+              "master":"Период приема: июль–август; возможны дополнительные осенние потоки. Точные даты публикуются КазНУ."
+            },
+            "scholarships":{
+              "bachelor":"52 372 тенге (пед/мед — 84 000 тенге)",
+              "master":"117 098 тенге"
+            }
+          }
+        },
 
-    const docs = data.documents || [];
-    const ul = document.getElementById("docsList");
-    ul.innerHTML = "";
-    docs.forEach(d => {
-      const li = document.createElement("li");
-      li.textContent = d;
-      ul.appendChild(li);
+        {
+          "id": "aues",
+          "name": "Алматинский университет энергетики и связи (АУЭС)",
+          "city": "Алматы",
+          "rating": 87,
+          "short_desc": "Университет с сильными программами в энергетике, телекоммуникациях и ИТ.",
+          "student_count": 8000,
+          "faculty_count": 700,
+          "programs_count": 60,
+          "contact": {"phone":"+7 (727) 323-11-75","email":"aues@aues.kz","address":"ул. Байтурсынова, 126/1, Алматы"},
+          "programs":[
+            {"id":"aues_b_ee","title":"Электроэнергетика (Бакалавриат)","level":"bachelor","lang":"ru"},
+            {"id":"aues_m_is","title":"Интеллектуальные энергосистемы (Магистратура)","level":"master","lang":"ru"}
+          ],
+          "admission":{
+            "documents":["Аттестат / диплом + копии","Паспорт / ИИН","Фотографии","Сертификат ЕНТ или вступительные испытания"],
+            "deadlines":{"bachelor":"Грантовый конкурс: середина июля. Платное обучение — до 25 августа.","master":"Приём магистратуры: июль–сентябрь."},
+            "scholarships":{"bachelor":"52 372 тенге","master":"117 098 тенге"}
+          }
+        },
+
+        {
+          "id":"kbtu",
+          "name":"Казахстанско-Британский технический университет (КБТУ)",
+          "city":"Алматы",
+          "rating":90,
+          "short_desc":"Технический университет с англоязычными программами.",
+          "student_count":5000,
+          "faculty_count":400,
+          "programs":[
+            {"id":"kbtu_b_oil","title":"Нефтегазовое дело (Бакалавриат)","level":"bachelor","lang":"ru"},
+            {"id":"kbtu_m_ds","title":"Data Science (Магистратура)","level":"master","lang":"en"}
+          ],
+          "admission":{
+            "documents":["Аттестат / диплом","Паспорт / ИИН","Фотографии","Результаты ЕНТ / вступительные тесты"],
+            "deadlines":{"bachelor":"Конец июня — конец августа. Конкурс на гранты — в июле.","master":"Июль–сентябрь."},
+            "scholarships":{"bachelor":"52 372 тенге","master":"117 098 тенге"}
+          }
+        },
+
+        {
+          "id":"iitu",
+          "name":"Международный университет информационных технологий (МУИТ / IITU)",
+          "city":"Алматы",
+          "rating":88,
+          "short_desc":"IT-вуз: программирование, AI, кибербезопасность.",
+          "student_count":6000,
+          "faculty_count":500,
+          "programs":[
+            {"id":"iitu_b_se","title":"Программная инженерия (Бакалавриат)","level":"bachelor","lang":"ru"},
+            {"id":"iitu_m_ai","title":"Искусственный интеллект (Магистратура)","level":"master","lang":"en"}
+          ],
+          "admission":{
+            "documents":["Аттестат / диплом","Паспорт / ИИН","Фотографии","Сертификат ЕНТ / вступительные испытания"],
+            "deadlines":{"bachelor":"20.06.2025 – 25.08.2025 (ориентировочно).","master":"Июль–сентябрь."},
+            "scholarships":{"bachelor":"52 372 тенге","master":"117 098 тенге"}
+          }
+        },
+
+        {
+          "id":"aitu",
+          "name":"Astana IT University (AITU)",
+          "city":"Астана",
+          "rating":85,
+          "short_desc":"IT-университет с фокусом на Data Science и AI.",
+          "student_count":3000,
+          "faculty_count":250,
+          "programs":[
+            {"id":"aitu_b_cs","title":"Информатика (Бакалавриат)","level":"bachelor","lang":"ru"},
+            {"id":"aitu_m_ai","title":"AI and Machine Learning (Магистратура)","level":"master","lang":"en"}
+          ],
+          "admission":{
+            "documents":["Аттестат / диплом","Паспорт / ИИН","Фотографии","Результаты ЕНТ / AET (если требуется)"],
+            "deadlines":{"bachelor":"Июнь–август (AET и регистрация на портале).","master":"Сроки зависят от направления."},
+            "scholarships":{"bachelor":"52 372 тенге","master":"117 098 тенге"}
+          }
+        }
+
+      ]
+    };
+  }
+
+  // простой DataHub shim, чтобы существующий код работал как раньше
+  window.DataHub = window.DataHub || {};
+  if (typeof DataHub.fetchUniversities !== 'function') {
+    DataHub.fetchUniversities = async function(filters) {
+      // можно подставлять фильтры (q, region) в будущем
+      // возвращаем shallow copy, чтобы нельзя было случайно модифицировать исходник
+      return (window.UNIVERSITIES_DB && Array.isArray(window.UNIVERSITIES_DB.universities))
+        ? window.UNIVERSITIES_DB.universities.map(u => Object.assign({}, u))
+        : [];
+    };
+  }
+
+  // escape helper (используется в других местах)
+  if (typeof DataHub.escapeHtml !== 'function') {
+    DataHub.escapeHtml = function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  }
+
+})();
+/*
+  admission.html — client-side admission form + data viewer
+  - Подгружает universities через DataHub.fetchUniversities() или window.UNIVERSITIES_DB
+  - Когда данные загружены, заполняет селекты, показывает требования и сроки
+  - Сохраняет заявки в localStorage (ключ dh_applications)
+*/
+
+document.addEventListener('DOMContentLoaded', () => {
+  const selUni = document.getElementById('selUni');
+  const selProgram = document.getElementById('selProgram');
+  const reqList = document.getElementById('reqList');
+  const docsList = document.getElementById('docsList');
+  const deadlines = document.getElementById('deadlines');
+  const scholarships = document.getElementById('scholarships');
+  const admissionStatus = document.getElementById('admissionStatus');
+  const applyForm = document.getElementById('applyForm');
+  const fullName = document.getElementById('fullName');
+  const email = document.getElementById('email');
+  const phone = document.getElementById('phone');
+  const message = document.getElementById('message');
+  const resetForm = document.getElementById('resetForm');
+  const toast = document.getElementById('toast');
+  const formNote = document.getElementById('formNote');
+
+  // header helpers (mobile)
+  const burger = document.getElementById('navBurger');
+  const nav = document.querySelector('.main-nav');
+  if (burger) {
+    burger.addEventListener('click', () => {
+      nav.classList.toggle('mobile-open');
+      nav.style.display = nav.classList.contains('mobile-open') ? 'flex' : '';
+    });
+  }
+
+  // helpers
+  const showToast = (text, ms=3000) => {
+    toast.textContent = text;
+    toast.style.display = 'block';
+    setTimeout(()=> toast.style.display = 'none', ms);
+  };
+
+  const saveApplicationToLocal = (obj) => {
+    try {
+      const key = 'dh_applications';
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      existing.unshift(obj);
+      localStorage.setItem(key, JSON.stringify(existing.slice(0,50))); // keep last 50
+    } catch (e) {
+      console.warn('Failed to save application', e);
+    }
+  };
+
+  const escapeHtml = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // get query params to preselect university/program
+  const params = new URLSearchParams(location.search);
+  const preUni = params.get('uni') || params.get('id') || '';
+  const preProgram = params.get('program') || '';
+
+  // data state
+  let universities = [];
+
+  // fetch universities (use DataHub if available)
+  async function loadUniversities() {
+    try {
+      if (window.DataHub && typeof DataHub.fetchUniversities === 'function') {
+        universities = await DataHub.fetchUniversities();
+      } else if (window.UNIVERSITIES_DB && Array.isArray(window.UNIVERSITIES_DB.universities)) {
+        universities = window.UNIVERSITIES_DB.universities;
+      } else {
+        // fallback: try fetch JSON path
+        const res = await fetch('assets/data/universities.json');
+        if (res.ok) {
+          const j = await res.json();
+          universities = j.universities || [];
+        } else {
+          throw new Error('no data');
+        }
+      }
+    } catch (err) {
+      console.warn('Ошибка загрузки университетов:', err);
+      admissionStatus.style.display = 'block';
+      admissionStatus.style.background = 'rgba(255,200,200,0.08)';
+      admissionStatus.style.color = '#702';
+      admissionStatus.textContent = 'Ошибка загрузки данных университетов. Проверьте assets/data/universities.json или DataHub.';
+      // show fallback empty UI
+      selUni.innerHTML = '<option value="">Данные недоступны</option>';
+      selProgram.innerHTML = '<option value="">—</option>';
+      reqList.innerHTML = '<li>Ошибка загрузки данных.</li>';
+      docsList.innerHTML = '<li>Нет данных</li>';
+      deadlines.textContent = 'Нет данных';
+      scholarships.textContent = 'Нет данных';
+      return;
+    }
+
+    // populate select
+    selUni.innerHTML = '<option value="">Выберите университет</option>';
+    universities.forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.id;
+      opt.textContent = u.name + (u.city ? ' · ' + u.city : '');
+      selUni.appendChild(opt);
     });
 
-  } catch (err) {
-    document.getElementById("reqText").textContent = "Ошибка загрузки данных.";
+    // try preselect if param present
+    if (preUni) {
+      // find matching id (case-insensitive)
+      const m = universities.find(x => x.id && String(x.id).toLowerCase() === String(preUni).toLowerCase());
+      if (m) {
+        selUni.value = m.id;
+      } else {
+        // try name match
+        const m2 = universities.find(x => (x.name||'').toLowerCase().includes(String(preUni).toLowerCase()));
+        if (m2) selUni.value = m2.id;
+      }
+    }
+
+    // trigger change to fill programs
+    onUniChange();
+
+    // if preProgram present, select it (after programs loaded)
+    if (preProgram) {
+      setTimeout(()=> {
+        // try select by program id or substring
+        for (let opt of selProgram.options) {
+          if (opt.value && (opt.value.toLowerCase() === preProgram.toLowerCase() || opt.text.toLowerCase().includes(preProgram.toLowerCase()))) {
+            selProgram.value = opt.value;
+            selProgram.dispatchEvent(new Event('change'));
+            break;
+          }
+        }
+      }, 250);
+    }
   }
-});
 
-// Submit application
-document.getElementById("applyForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+  function onUniChange() {
+    const id = selUni.value;
+    const u = universities.find(x => x.id === id);
+    selProgram.innerHTML = '<option value="">Выберите программу</option>';
+    // reset info blocks
+    reqList.innerHTML = '<li>—</li>';
+    docsList.innerHTML = '<li>Загрузка...</li>';
+    deadlines.textContent = 'Загрузка сроков...';
+    scholarships.textContent = 'Загрузка данных о финансировании...';
+    admissionStatus.style.display = 'none';
+    formNote.textContent = '';
 
-  const status = document.getElementById("applyStatus");
-  status.textContent = "Отправка...";
+    if (!u) {
+      selProgram.innerHTML = '<option value="">Сначала выберите университет</option>';
+      return;
+    }
 
-  const formData = Object.fromEntries(new FormData(e.target).entries());
+    // fill programs if present
+    if (Array.isArray(u.programs) && u.programs.length) {
+      u.programs.forEach((p, idx) => {
+        const opt = document.createElement('option');
+        // program id may be title or combined
+        const pid = p.id || `${u.id}::${idx}`;
+        opt.value = pid;
+        opt.textContent = p.title || p.name || (p.level ? `${p.level} — ` : '') + (p.title || `Программа ${idx+1}`);
+        opt.dataset.level = (p.level||'').toLowerCase();
+        opt.dataset.lang = (p.lang||'').toLowerCase();
+        opt.dataset.short = p.short_desc || '';
+        selProgram.appendChild(opt);
+      });
+    } else {
+      // no programs — synth demo options
+      const demoB = document.createElement('option');
+      demoB.value = `${u.id}::bsc`;
+      demoB.textContent = 'Бакалавриат (пример)';
+      selProgram.appendChild(demoB);
+      const demoM = document.createElement('option');
+      demoM.value = `${u.id}::msc`;
+      demoM.textContent = 'Магистратура (пример)';
+      selProgram.appendChild(demoM);
+    }
 
-  try {
-    const res = await DataHub.submitApplication(formData);
-    status.textContent = "Заявление успешно отправлено!";
-  } catch {
-    status.textContent = "Ошибка отправки.";
+    // fill documents / deadlines / scholarships using fields if exist
+    // universities data may include 'admission' object with fields documents, deadlines, scholarships
+    const admission = u.admission || {};
+    // documents
+    if (Array.isArray(admission.documents) && admission.documents.length) {
+      docsList.innerHTML = '';
+      admission.documents.forEach(d => {
+        const li = document.createElement('li');
+        li.textContent = d;
+        docsList.appendChild(li);
+      });
+    } else {
+      docsList.innerHTML = '<li>Аттестат / диплом, копии документов, фото, паспорт, результаты вступительных испытаний (если требуется).</li>';
+    }
+
+    // deadlines
+    // --- deadlines (форматируем объект или строку) ---
+if (admission.deadlines) {
+  // если это строка — покажем её
+  if (typeof admission.deadlines === 'string') {
+    deadlines.innerHTML = DataHub && DataHub.escapeHtml ? DataHub.escapeHtml(admission.deadlines) : escapeHtml(admission.deadlines);
+  } else if (typeof admission.deadlines === 'object') {
+    // составим аккуратный HTML с разделением бакалавриат / магистратура / другое
+    let html = '<div>';
+    for (const key of Object.keys(admission.deadlines)) {
+      const label = (key === 'bachelor') ? 'Бакалавриат' : (key === 'master') ? 'Магистратура' : key;
+      html += `<strong>${DataHub && DataHub.escapeHtml ? DataHub.escapeHtml(label) : escapeHtml(label)}:</strong> `;
+      const val = admission.deadlines[key];
+      if (typeof val === 'string') {
+        html += `<div style="margin:6px 0 12px 0;">${DataHub && DataHub.escapeHtml ? DataHub.escapeHtml(val) : escapeHtml(val)}</div>`;
+      } else {
+        html += `<div style="margin:6px 0 12px 0;">${DataHub && DataHub.escapeHtml ? DataHub.escapeHtml(JSON.stringify(val)) : escapeHtml(JSON.stringify(val))}</div>`;
+      }
+    }
+    html += '</div>';
+    deadlines.innerHTML = html;
+  } else {
+    deadlines.textContent = String(admission.deadlines);
   }
+} else {
+  deadlines.innerHTML = 'Главный приём обычно проходит в июне–августе, уточняйте даты на сайте вуза.';
+}
+
+// --- scholarships (также форматируем объект или строку) ---
+if (admission.scholarships) {
+  if (typeof admission.scholarships === 'string') {
+    scholarships.innerHTML = DataHub && DataHub.escapeHtml ? DataHub.escapeHtml(admission.scholarships) : escapeHtml(admission.scholarships);
+  } else if (typeof admission.scholarships === 'object') {
+    let html = '<div>';
+    for (const key of Object.keys(admission.scholarships)) {
+      const label = (key === 'bachelor') ? 'Бакалавриат' : (key === 'master') ? 'Магистратура' : key;
+      html += `<strong>${DataHub && DataHub.escapeHtml ? DataHub.escapeHtml(label) : escapeHtml(label)}:</strong> `;
+      const val = admission.scholarships[key];
+      if (typeof val === 'string') {
+        html += `<div style="margin:6px 0 12px 0;">${DataHub && DataHub.escapeHtml ? DataHub.escapeHtml(val) : escapeHtml(val)}</div>`;
+      } else {
+        html += `<div style="margin:6px 0 12px 0;">${DataHub && DataHub.escapeHtml ? DataHub.escapeHtml(JSON.stringify(val)) : escapeHtml(JSON.stringify(val))}</div>`;
+      }
+    }
+    html += '</div>';
+    scholarships.innerHTML = html;
+  } else {
+    scholarships.textContent = String(admission.scholarships);
+  }
+  } else {
+    scholarships.innerHTML = 'Стипендии и гранты предоставляются по результатам конкурса и по иным программам — уточняйте на сайте вуза.';
+  }
+
+
+    // show quick summary
+    const summary = `Университет: ${u.name}${u.city ? ' · ' + u.city : ''}`;
+    admissionStatus.style.display = 'block';
+    admissionStatus.style.background = 'linear-gradient(90deg, rgba(110,231,183,0.06), rgba(110,231,183,0.03))';
+    admissionStatus.style.color = '#0b3';
+    admissionStatus.textContent = summary;
+  }
+
+  function onProgramChange() {
+    const pid = selProgram.value;
+    const uid = selUni.value;
+    const u = universities.find(x => x.id === uid);
+    if (!u) return;
+    // find program object if exists
+    let p = null;
+    if (Array.isArray(u.programs)) {
+      p = u.programs.find((pp, idx) => (pp.id && String(pp.id) === pid) || `${u.id}::${idx}` === pid || `${u.id}::${pp.title}` === pid);
+      // fallback by matching title
+      if (!p) p = u.programs.find(pp => (pp.title || '').toLowerCase() === (selProgram.options[selProgram.selectedIndex]?.text || '').toLowerCase());
+    }
+    // fill requirements
+    reqList.innerHTML = '';
+    if (p && Array.isArray(p.requirements) && p.requirements.length) {
+      p.requirements.forEach(r => {
+        const li = document.createElement('li'); li.textContent = r; reqList.appendChild(li);
+      });
+    } else {
+      // look for requirements at university level
+      const adm = (u.admission && u.admission.requirements) || [];
+      if (adm.length) {
+        adm.forEach(r => { const li=document.createElement('li'); li.textContent = r; reqList.appendChild(li); });
+      } else {
+        reqList.innerHTML = '<li>Общие требования: аттестат/диплом, результаты вступительных испытаний (если требуются), паспорт или ИИН.</li>';
+      }
+    }
+  }
+
+  // form submission
+  applyForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    // simple validation
+    const uid = selUni.value.trim();
+    const pid = selProgram.value.trim();
+    const name = fullName.value.trim();
+    const mail = email.value.trim();
+
+    if (!uid) { formNote.textContent = 'Пожалуйста, выберите университет.'; return; }
+    if (!pid) { formNote.textContent = 'Пожалуйста, выберите программу.'; return; }
+    if (!name) { formNote.textContent = 'Пожалуйста, введите ФИО.'; fullName.focus(); return; }
+    if (!mail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { formNote.textContent = 'Введите корректный email.'; email.focus(); return; }
+
+    formNote.textContent = '';
+
+    const uni = universities.find(x => x.id === uid) || { name: uid };
+    const programTitle = (() => {
+      const opt = selProgram.options[selProgram.selectedIndex];
+      return opt ? opt.textContent : pid;
+    })();
+
+    const payload = {
+      id: 'app_' + Date.now(),
+      timestamp: new Date().toISOString(),
+      university_id: uid,
+      university_name: uni.name,
+      program_id: pid,
+      program_title: programTitle,
+      full_name: name,
+      email: mail,
+      phone: phone.value.trim(),
+      message: message.value.trim()
+    };
+
+    // save locally (fallback) — replace with fetch POST when backend available
+    saveApplicationToLocal(payload);
+
+    // show confirmation
+    showToast('Заявление сохранено локально. При наличии API оно будет отправлено на сервер.');
+    // clear form (except uni/program so user sees context)
+    fullName.value = '';
+    email.value = '';
+    phone.value = '';
+    message.value = '';
+
+    // optionally, show details of saved application
+    admissionStatus.style.display = 'block';
+    admissionStatus.style.background = 'linear-gradient(90deg, rgba(110,231,183,0.08), rgba(110,231,183,0.02))';
+    admissionStatus.style.color = '#073';
+    admissionStatus.textContent = `Заявление отправлено в ${uni.name} — программа: ${programTitle}`;
+  });
+
+  resetForm.addEventListener('click', (e) => {
+    applyForm.reset();
+    selProgram.innerHTML = '<option value="">Сначала выберите университет</option>';
+    reqList.innerHTML = '<li>—</li>';
+    docsList.innerHTML = '<li>—</li>';
+    deadlines.textContent = '—';
+    scholarships.textContent = '—';
+    formNote.textContent = '';
+  });
+
+  selUni.addEventListener('change', () => {
+    onUniChange();
+    // reset program selection to default
+    selProgram.value = '';
+  });
+  selProgram.addEventListener('change', onProgramChange);
+
+  // initial load
+  loadUniversities();
 });
 </script>
 

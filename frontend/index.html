@@ -145,8 +145,8 @@
             <ul id="popularList">
               <li><a href="university.html?id=kznu">КазНУ им. аль-Фараби</a> · Алматы</li>
               <li><a href="university.html?id=aues">АУЭС — Университет энерго-связи</a> · Алматы</li>
-              <li><a href="university.html?id=kbt u">КБТУ — Казахстанско-Британский Технический Университет</a> · Алматы</li>
-              <li><a href="university.html?id=mu it">МУИТ — Международный Университет ИТ</a> · Алматы</li>
+              <li><a href="university.html?id=kbtu">КБТУ — Казахстанско-Британский Технический Университет</a> · Алматы</li>
+              <li><a href="university.html?id=iitu">МУИТ — Международный Университет ИТ</a> · Алматы</li>
               <li><a href="university.html?id=aitu">AITU — Astana IT University</a> · Астана</li>
             </ul>
 
@@ -204,73 +204,280 @@
   <!-- общий скрипт (внешний) -->
   <script src="assets/js/app.js" defer></script>
 
-  <!-- локальная логика: моб.меню, поиск, подгрузка популярных -->
-  <script defer>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const burger = document.getElementById('navBurger');
-      const nav = document.querySelector('.main-nav');
+  <!-- ЗАМЕНИТЕ СТАРЫЙ БЛОК ЛОКАЛЬНОЙ ЛОГИКИ НА ЭТОТ -->
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // элементы
+    const burger = document.getElementById('navBurger');
+    const nav = document.querySelector('.main-nav');
+    const popularList = document.getElementById('popularList');
+    const grid = document.getElementById('grid');
+    const pageInfo = document.getElementById('pageInfo');
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    const sortSelect = document.getElementById('sortBy');
+    const reloadBtn = document.getElementById('btnReload');
+    const searchForm = document.getElementById('searchForm');
+    const searchQ = document.getElementById('searchQ');
+    const filterRegion = document.getElementById('filterRegion');
+    const btnAdvanced = document.getElementById('btnAdvanced');
 
-      // Бургер — открывает/закрывает мобильное меню
-      burger.addEventListener('click', () => {
-        if (nav.classList.contains('mobile-open')) {
-          nav.classList.remove('mobile-open');
-          nav.style.display = '';
-        } else {
-          nav.classList.add('mobile-open');
-          nav.style.display = 'flex';
-        }
-      });
+    // state
+    let allList = [];       // список из DataHub (полный)
+    let currentList = [];   // после фильтров/поиска
+    let page = 1;
+    const PER_PAGE = 6;
 
-      // Закрывать мобильное меню при клике вне меню
-      document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 980) {
-          if (!nav.contains(e.target) && !burger.contains(e.target)) {
-            nav.classList.remove('mobile-open');
-            nav.style.display = 'none';
-          }
-        }
-      });
+     // маппинг значений селекта регионов (внизу — к нормализованной форме, в которой хранятся города)
+    const regionMap = {
+      "almaty": "алматы",
+      "almatyq": "алматы",
+      "almaty (алматы)": "алматы",
+      "almaty_city": "алматы",
+      "nursultan": "астана",
+      "nur-sultan": "астана",
+      "astana": "астана",
+      "astana_city": "астана",
+      "shymkent": "шыМКент".toLowerCase(), // пример: можете расширить карту
+      "": ""
+    };
+    // --- Helpers: normalisation / acronym building ---
+    const norm = (s = '') => String(s).toLowerCase()
+      .normalize ? String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') : String(s).toLowerCase();
 
-      // Подгружаем популярные вузы и начальный список карточек
-      try {
-        const list = await DataHub.fetchUniversities();
-        const popular = document.getElementById('popularList');
-        popular.innerHTML = '';
-        list.slice(0,6).forEach(u => {
-          const li = document.createElement('li');
-          li.style.marginBottom = '8px';
-          li.innerHTML = `<a href="university.html?id=${encodeURIComponent(u.id)}" style="color:var(--accent)">${DataHub.escapeHtml(u.name)}</a> <span class="small muted-note"> · ${DataHub.escapeHtml(u.city||'')}</span>`;
-          popular.appendChild(li);
-        });
+    function buildAcronym(name) {
+      if (!name) return '';
+      // берём первые буквы слов (латиница или кириллица)
+      return name.split(/[\s\-\–_()]+/).map(w => w.trim()).filter(Boolean).map(w => w[0]?.toUpperCase()||'').join('');
+    }
 
-        // render cards
-        const container = document.getElementById('grid');
-        DataHub.renderUniversityCards(container, list.slice(0, 12));
-        document.getElementById('pageInfo').textContent = `1 / ${Math.max(1, Math.ceil(list.length / 12))}`;
-      } catch (err) {
-        console.warn('Не удалось загрузить список вузов', err);
+    // строит поисковое поле для каждого университета
+    function buildSearchIndex(u) {
+      const parts = [];
+      parts.push(u.id || '');
+      parts.push(u.name || '');
+      parts.push(u.short_desc || '');
+      parts.push(u.long_desc || '');
+      parts.push(u.city || '');
+      if (Array.isArray(u.partners)) {
+        parts.push(u.partners.map(p => p.partner_name || '').join(' '));
       }
+      // дополнительные алиасы: если в данных есть alias/aliases
+      if (u.aliases) parts.push(Array.isArray(u.aliases) ? u.aliases.join(' ') : (''+u.aliases));
+      // компактные варианты без пробелов
+      const joined = parts.join(' ');
+      const flat = joined.replace(/\s+/g,'');
+      const acronym = buildAcronym(u.name || '');
+      return {
+        raw: joined,
+        norm: norm(joined),
+        flat: norm(flat),
+        acronym: norm(acronym)
+      };
+    }
 
-      // Поиск (простая demo-логика)
-      const searchForm = document.getElementById('searchForm');
+    // render popular list
+    function renderPopular(list) {
+      popularList.innerHTML = '';
+      if (!list || !list.length) {
+        popularList.innerHTML = '<li class="muted-note">Данные отсутствуют</li>';
+        return;
+      }
+      list.slice(0,6).forEach(u => {
+        const li = document.createElement('li');
+        li.style.marginBottom = '8px';
+        li.innerHTML = `<a href="university.html?id=${encodeURIComponent(u.id)}" style="color:var(--accent)">${DataHub.escapeHtml(u.name)}</a>
+                        <div class="small muted-note">${DataHub.escapeHtml(u.city||'')}</div>`;
+        popularList.appendChild(li);
+      });
+    }
+
+    // render grid (paginated)
+    function renderGrid(list) {
+      grid.innerHTML = '';
+      if (!list || !list.length) {
+        grid.innerHTML = '<p class="muted-note">Список университетов пуст.</p>';
+        pageInfo.textContent = '0 / 0';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+      }
+      const totalPages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+      if (page > totalPages) page = totalPages;
+      const start = (page - 1) * PER_PAGE;
+      const pageItems = list.slice(start, start + PER_PAGE);
+
+      pageItems.forEach(u => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.innerHTML = `
+          <div style="display:flex;gap:14px;align-items:center;">
+            <div style="width:96px;height:72px;border-radius:10px;background:#f5f9ff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;">
+              ${DataHub.escapeHtml((u.name||'')[0] || 'U')}
+            </div>
+            <div style="flex:1">
+              <a href="university.html?id=${encodeURIComponent(u.id)}" style="font-size:18px;font-weight:700;color:var(--text);text-decoration:none;">
+                ${DataHub.escapeHtml(u.name)}
+              </a>
+              <div class="muted-note" style="margin-top:6px">${DataHub.escapeHtml(u.city || '')} · рейтинг: ${u.rating ?? '—'}</div>
+              <div class="muted-note" style="margin-top:8px">${DataHub.escapeHtml((u.short_desc||'').substring(0,160))}</div>
+              <div style="margin-top:10px;display:flex;gap:10px;">
+                <a class="btn ghost" href="university.html?id=${encodeURIComponent(u.id)}">Подробнее</a>
+                <a class="btn primary" href="admission.html?uni=${encodeURIComponent(u.id)}">Подать заявление</a>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(el);
+      });
+
+      pageInfo.textContent = `${page} / ${totalPages}`;
+      prevBtn.disabled = page <= 1;
+      nextBtn.disabled = page >= totalPages;
+    }
+
+    // main filter: ищем по q и region внутри предварительно загруженного allList
+    function filterUniversities(q = '', region = '') {
+      const qnorm = norm(q || '');
+      const rnorm = norm(region || '');
+      if (!qnorm && !rnorm) return allList.slice();
+
+      const results = allList.filter(item => {
+        const idx = item._searchIdx; // ранее добавленный индекс
+        // region filter: если указан, должен присутствовать в поле city или region
+        if (rnorm) {
+          const cityOk = idx.norm.includes(rnorm) || (item.city && norm(item.city).includes(rnorm));
+          if (!cityOk) return false;
+        }
+        if (!qnorm) return true; // только фильтр по региону
+
+        // три основных способа совпадения:
+        // 1) полное включение нормализованной строки
+        if (idx.norm.includes(qnorm)) return true;
+        // 2) включение в "flat" (без пробелов) позволяет находить аббревиатуры/склеенные запросы
+        if (idx.flat.includes(qnorm.replace(/\s+/g,''))) return true;
+        // 3) акроним (инициалы) совпадают или содержат
+        if (idx.acronym && idx.acronym.includes(qnorm.toUpperCase())) return true;
+        // 4) частичная проверка токенов (начинается с)
+        const tokens = idx.norm.split(/\s+/);
+        for (let t of tokens) {
+          if (t.startsWith(qnorm)) return true;
+        }
+        // 5) совпадение по id
+        if ((item.id || '').toLowerCase().includes(qnorm)) return true;
+
+        return false;
+      });
+
+      return results;
+    }
+
+    // загрузка initial + индексирование
+    async function loadInitial() {
+      try {
+        allList = await DataHub.fetchUniversities();
+        // ensure each has id and name
+        allList = allList.map(u => Object.assign({ id: u.id || (u.name||'').toLowerCase().replace(/\s+/g,''), name: u.name || '—' }, u));
+        // build _searchIdx for each
+        allList.forEach(u => { u._searchIdx = buildSearchIndex(u); });
+        currentList = allList.slice();
+        renderPopular(allList);
+        page = 1;
+        renderGrid(currentList);
+      } catch (err) {
+        console.warn('Ошибка при загрузке университетов', err);
+        popularList.innerHTML = '<li class="muted-note">Не удалось загрузить данные.</li>';
+        grid.innerHTML = '<p class="muted-note">Не удалось загрузить данные.</p>';
+      }
+    }
+
+    // perform search triggered by UI; q empty => show all
+      // perform search triggered by UI; q empty => show all
+  function doLocalSearch() {
+    const q = (searchQ.value || '').trim();
+    let region = (filterRegion.value || '').trim();
+
+    // Нормализация: привести region к нижнему регистру и сопоставить с картой
+    const rkey = (region || '').toString().toLowerCase().replace(/\s+/g, '');
+    // если в map есть ключ — возьмём его value; иначе будем использовать нормализованный ввод
+    const mapped = regionMap[rkey];
+    if (mapped !== undefined) {
+      region = mapped; // уже в нормализованной кириллической форме (например "алматы" или "астана")
+    } else {
+      // если нет в мапе, попробуем привести ввод к кириллической норме через norm()
+      region = norm(region);
+    }
+
+    const results = filterUniversities(q, region);
+    currentList = results;
+    page = 1;
+    renderGrid(currentList);
+    renderPopular(results);
+  }
+
+
+    // events
+    if (searchForm) {
       searchForm.addEventListener('submit', (ev) => {
         ev.preventDefault();
-        const q = document.getElementById('searchQ').value.trim();
-        const region = document.getElementById('filterRegion').value;
-        DataHub.fetchUniversities({ q, region }).then(list => {
-          const container = document.getElementById('grid');
-          DataHub.renderUniversityCards(container, list);
-        }).catch(err => console.warn(err));
+        doLocalSearch();
       });
-
-      // Кнопки пагинации (демо)
-      document.getElementById('prevPage').addEventListener('click', () => {
-        // реализацию пагинации можно добавить здесь
+    }
+    if (searchQ) {
+      // live search as user types (debounced)
+      let timer = null;
+      searchQ.addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => doLocalSearch(), 220);
       });
-      document.getElementById('nextPage').addEventListener('click', () => {
-        // реализацию пагинации можно добавить здесь
+    }
+    if (filterRegion) {
+      filterRegion.addEventListener('change', () => doLocalSearch());
+    }
+    if (btnAdvanced) {
+      btnAdvanced.addEventListener('click', () => {
+        if (btnAdvanced.dataset.open === '1') {
+          btnAdvanced.dataset.open = '0';
+          btnAdvanced.textContent = 'Расширенный поиск';
+        } else {
+          btnAdvanced.dataset.open = '1';
+          btnAdvanced.textContent = 'Скрыть расширенный';
+          alert('Здесь можно добавить дополнительные поля для расширенного поиска.');
+        }
       });
+    }
+    if (reloadBtn) {
+      reloadBtn.addEventListener('click', () => loadInitial());
+    }
+    prevBtn.addEventListener('click', () => {
+      if (page > 1) { page--; renderGrid(currentList); window.scrollTo({top:200, behavior:'smooth'}); }
     });
+    nextBtn.addEventListener('click', () => {
+      const totalPages = Math.max(1, Math.ceil(currentList.length / PER_PAGE));
+      if (page < totalPages) { page++; renderGrid(currentList); window.scrollTo({top:200, behavior:'smooth'}); }
+    });
+
+    // burger (mobile)
+    if (burger) {
+      burger.addEventListener('click', () => {
+        if (nav.classList.contains('mobile-open')) {
+          nav.classList.remove('mobile-open'); nav.style.display = '';
+        } else {
+          nav.classList.add('mobile-open'); nav.style.display = 'flex';
+        }
+      });
+      document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 980 && !nav.contains(e.target) && !burger.contains(e.target)) {
+          nav.classList.remove('mobile-open'); nav.style.display = 'none';
+        }
+      });
+    }
+
+    // initial load
+    loadInitial();
+  });
   </script>
+
+
 </body>
 </html>

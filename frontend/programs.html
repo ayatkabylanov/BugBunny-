@@ -5,53 +5,28 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Академические программы — DataHub ВУЗ-ов «РК»</title>
 
-  <!-- общий стиль -->
   <link rel="stylesheet" href="assets/css/styles.css">
 
   <style>
-    /* Локальные стили страницы программ */
-    .programs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-      margin-top: 12px;
-    }
-
-    .program-card {
-      padding: 14px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.02);
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
-    .program-meta { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .program-title { font-weight:700; font-size:16px; margin:0; }
-    .program-desc { color:var(--muted); font-size:14px; margin:0; line-height:1.4; }
-
-    .filters { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:8px; }
-    .filters select, .filters input { min-width:160px; }
-
-    .detail-panel { margin-top:12px; }
-    .detail-panel .card { padding:16px; }
-    @media (max-width:980px) {
-      .programs-grid { grid-template-columns: 1fr; }
-    }
+    /* небольшой локальный стиль для программ */
+    .programs-hero { padding: 18px 0; }
+    .filters-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+    .program-card { display:flex; gap:14px; align-items:flex-start; padding:14px; border-radius:10px; background:var(--surface); box-shadow:var(--shadow); }
+    .program-card .logo { width:88px; height:68px; border-radius:8px; background:#f5f9ff; display:flex;align-items:center;justify-content:center;font-weight:700;font-size:26px; }
+    .pill { display:inline-block; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,0.04); color:var(--muted); font-size:13px; }
+    .small-muted { color:var(--muted); font-size:13px; }
   </style>
 </head>
 <body>
 
-<!-- ========== UNIFIED HEADER ========== -->
+<!-- HEADER: reuse same header as other pages -->
 <header class="site-header">
   <div class="header-inner">
-    <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
-      <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
-          <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"></rect>
-          <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
+    <a href="index.html" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
+      <svg width="44" height="44" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="1" y="1" width="22" height="22" rx="5" fill="#0b1220"></rect>
+        <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
       <div style="line-height:1;">
         <div style="font-weight:700; color:var(--text); font-size:16px;">DataHub ВУЗ-ов «РК»</div>
         <div style="font-size:12px; color:var(--muted);">Каталог университетов</div>
@@ -61,7 +36,7 @@
     <nav class="main-nav">
       <a class="nav-link" href="index.html">Главная</a>
       <a class="nav-link" href="university.html">Об университете</a>
-      <a class="nav-link" href="programs.html">Программы</a>
+      <a class="nav-link active" href="programs.html">Академ. программы</a>
       <a class="nav-link" href="admission.html">Приём</a>
       <a class="nav-link" href="compare.html">Сравнение</a>
       <a class="nav-link" href="partners.html">Партнёры</a>
@@ -70,251 +45,251 @@
 
     <div style="display:flex; gap:10px; align-items:center;">
       <a href="admission.html" class="btn primary">Подать заявление</a>
-      <button class="burger" id="navBurger" type="button">
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+      <button class="burger" id="navBurger" type="button" aria-label="menu">
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;"></span>
       </button>
     </div>
   </div>
 </header>
 
-<!-- header helpers -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  // active link
-  const path = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.main-nav .nav-link').forEach(a => {
-    if (a.getAttribute('href') === path) a.classList.add('active');
-  });
-
-  const burger = document.getElementById('navBurger');
-  const nav = document.querySelector('.main-nav');
-  if (burger && nav) {
-    burger.addEventListener('click', () => nav.classList.toggle('mobile-open'));
-    document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 980 && nav.classList.contains('mobile-open')) {
-        if (!nav.contains(e.target) && !burger.contains(e.target)) nav.classList.remove('mobile-open');
-      }
-    });
-  }
-
-  // adjust body padding to header height
-  const header = document.querySelector('.site-header');
-  function adjustPad(){ document.body.style.paddingTop = header.getBoundingClientRect().height + 'px'; }
-  adjustPad();
-  window.addEventListener('resize', adjustPad);
-});
-</script>
-
-<!-- ========== MAIN ========== -->
 <main class="main-content">
-  <div class="card">
-    <h2>Академические программы</h2>
-    <p class="muted-note">Поиск и просмотр образовательных программ университетов. Выберите программу, чтобы увидеть детали и требования.</p>
+  <section class="card programs-hero">
+    <h1 style="margin:0 0 8px 0;">Академические программы</h1>
+    <p class="lead" style="margin:0 0 14px 0;">Поиск и просмотр образовательных программ университетов. Выберите программу, чтобы увидеть детали и требования.</p>
 
-    <div class="filters" style="margin-top:12px;">
-      <input id="qInput" type="search" placeholder="Поиск по названию или ключевым словам">
-      <select id="degreeFilter">
-        <option value="">Все уровни</option>
-        <option value="Bachelor">Бакалавриат</option>
-        <option value="Master">Магистратура</option>
-        <option value="PhD">PhD</option>
-      </select>
-      <select id="langFilter">
-        <option value="">Все языки</option>
-        <option value="Kazakh">Kazakh</option>
-        <option value="Russian">Russian</option>
-        <option value="English">English</option>
-      </select>
-      <button id="btnSearch" class="btn primary">Поиск</button>
-      <button id="btnReset" class="btn ghost">Сброс</button>
-    </div>
-  </div>
-
-  <div style="display:flex; gap:20px; margin-top:14px; align-items:flex-start; flex-wrap:wrap;">
-    <section style="flex:1 1 640px; min-width:320px;">
-      <div id="programsGrid" class="programs-grid">
-        <p class="muted-note">Загрузка программ...</p>
+    <form id="progSearch" style="margin-top:8px;">
+      <div class="filters-row">
+        <input id="progQ" type="search" placeholder="Поиск по названию или ключевым словам" style="flex:1; min-width:240px;">
+        <select id="progLevel" style="min-width:160px;">
+          <option value="">Все уровни</option>
+          <option value="bachelor">Бакалавр</option>
+          <option value="master">Магистр</option>
+          <option value="phd">PhD</option>
+        </select>
+        <select id="progLang" style="min-width:160px;">
+          <option value="">Все языки</option>
+          <option value="ru">Русский</option>
+          <option value="kz">Казахский</option>
+          <option value="en">Английский</option>
+        </select>
+        <button class="btn primary" type="submit">Поиск</button>
+        <button class="btn ghost" type="button" id="progReset">Сброс</button>
       </div>
+    </form>
+  </section>
 
-      <nav id="pagination" class="pagination" style="margin-top:16px; display:flex; gap:8px; align-items:center; justify-content:center;">
-        <button id="prevPage" class="btn ghost">← Назад</button>
-        <span id="pageInfo" class="small">1 / 1</span>
-        <button id="nextPage" class="btn ghost">Вперёд →</button>
-      </nav>
-    </section>
+  <section class="card" style="margin-top:14px;">
+    <h3>Результаты</h3>
+    <div id="programsGrid" style="margin-top:12px; display:grid; gap:12px;"></div>
 
-    <aside style="width:360px; min-width:260px;">
-      <div class="card detail-panel" id="detailPanel">
-        <h3>Детали программы</h3>
-        <div id="detailContent" class="muted-note">Выберите программу слева, чтобы увидеть подробности.</div>
-      </div>
-    </aside>
-  </div>
+    <nav id="progPagination" class="pagination" style="margin-top:18px; display:flex; gap:8px; align-items:center; justify-content:center;">
+      <button id="progPrev" class="btn ghost">← Назад</button>
+      <span id="progPageInfo" class="small">0 / 0</span>
+      <button id="progNext" class="btn ghost">Вперёд →</button>
+    </nav>
+  </section>
 </main>
 
-<!-- ========== FOOTER ========== -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div>
-      <strong>DataHub ВУЗ-ов «РК»</strong><br>
-      <span class="small muted-note">Контакты: info@datahub.kz</span>
-    </div>
+    <div><strong>DataHub ВУЗ-ов «РК»</strong><br><span class="small muted-note">Контакты: <a href="mailto:info@datahub.kz">info@datahub.kz</a></span></div>
     <div class="small muted-note">Политика конфиденциальности · Помощь</div>
   </div>
 </footer>
 
-<!-- общий скрипт (если есть) -->
 <script src="assets/js/app.js" defer></script>
 
-<!-- локальная логика программы -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const grid = document.getElementById('programsGrid');
-  const detail = document.getElementById('detailContent');
-  const qInput = document.getElementById('qInput');
-  const degreeFilter = document.getElementById('degreeFilter');
-  const langFilter = document.getElementById('langFilter');
-  const btnSearch = document.getElementById('btnSearch');
-  const btnReset = document.getElementById('btnReset');
-  const prevPage = document.getElementById('prevPage');
-  const nextPage = document.getElementById('nextPage');
-  const pageInfo = document.getElementById('pageInfo');
+/*
+  programs.html — client-side aggregator of programs.
+  Uses DataHub.fetchUniversities() to get list of universities and their programs.
+  If a university has no 'programs' array, we synthesize demo programs.
+*/
+document.addEventListener('DOMContentLoaded', async () => {
+  // elements
+  const progQ = document.getElementById('progQ');
+  const progLevel = document.getElementById('progLevel');
+  const progLang = document.getElementById('progLang');
+  const progSearch = document.getElementById('progSearch');
+  const progReset = document.getElementById('progReset');
+  const programsGrid = document.getElementById('programsGrid');
+  const progPrev = document.getElementById('progPrev');
+  const progNext = document.getElementById('progNext');
+  const progPageInfo = document.getElementById('progPageInfo');
 
-  let programs = [];
+  // state
+  let allPrograms = []; // { id, title, uniId, uniName, city, level, lang, desc }
   let filtered = [];
   let page = 1;
-  const PAGE_SIZE = 8;
+  const PER_PAGE = 6;
 
-  function escapeHtml(s){ if (!s) return ''; return String(s).replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]); }
+  // helper normalize
+  const n = s => (String(s||'')).toLowerCase();
 
-  function renderGridPage() {
-    grid.innerHTML = '';
-    const start = (page-1)*PAGE_SIZE;
-    const slice = filtered.slice(start, start + PAGE_SIZE);
-    if (!slice.length) {
-      grid.innerHTML = '<p class="muted-note">Ничего не найдено.</p>';
-      pageInfo.textContent = '0 / 0';
+  // load universities and build programs list
+  async function loadPrograms() {
+    try {
+      const list = await DataHub.fetchUniversities();
+      const items = [];
+
+      list.forEach(u => {
+        // if university has explicit programs array, prefer it
+        if (Array.isArray(u.programs) && u.programs.length) {
+          u.programs.forEach((p, idx) => {
+            // allow p to be string or object
+            if (typeof p === 'string') {
+              items.push({
+                id: `${u.id}::${idx}`,
+                title: p,
+                uniId: u.id,
+                uniName: u.name,
+                city: u.city,
+                level: p.level || '', // likely absent
+                lang: p.lang || '',
+                desc: ''
+              });
+            } else {
+              items.push({
+                id: `${u.id}::${idx}`,
+                title: p.title || p.name || ('Программа ' + (idx+1)),
+                uniId: u.id,
+                uniName: u.name,
+                city: u.city,
+                level: (p.level||'').toLowerCase(),
+                lang: (p.lang||'').toLowerCase(),
+                desc: p.description || p.short_desc || ''
+              });
+            }
+          });
+        } else {
+          // synthesize couple of demo programs for this uni so UI не пустует
+          items.push({
+            id: `${u.id}::bsc`,
+            title: `Бакалавриат: ${u.name.split(' ')[0]} (IT/CS)`,
+            uniId: u.id,
+            uniName: u.name,
+            city: u.city,
+            level: 'bachelor',
+            lang: 'ru',
+            desc: `Базовая бакалаврская программа по информатике в ${u.name}.`
+          });
+          items.push({
+            id: `${u.id}::msc`,
+            title: `Магистратура: ${u.name} (Data Science)`,
+            uniId: u.id,
+            uniName: u.name,
+            city: u.city,
+            level: 'master',
+            lang: 'en',
+            desc: `Углублённая магистерская программа по Data Science в ${u.name}.`
+          });
+        }
+      });
+
+      allPrograms = items;
+      filtered = allPrograms.slice();
+      page = 1;
+      renderPrograms();
+    } catch (err) {
+      console.error('Не удалось загрузить программы', err);
+      programsGrid.innerHTML = '<p class="muted-note">Не удалось загрузить данные программ.</p>';
+    }
+  }
+
+  function renderPrograms() {
+    programsGrid.innerHTML = '';
+    if (!filtered.length) {
+      programsGrid.innerHTML = '<p class="muted-note">Результатов не найдено.</p>';
+      progPageInfo.textContent = '0 / 0';
+      progPrev.disabled = true;
+      progNext.disabled = true;
       return;
     }
-    slice.forEach(p => {
-      const div = document.createElement('div');
-      div.className = 'program-card';
-      div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; gap:8px;">
-          <div style="flex:1;">
-            <h4 class="program-title">${escapeHtml(p.title)}</h4>
-            <p class="program-desc">${escapeHtml(p.description ? (p.description.slice(0,140)) : '')}</p>
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+    if (page > totalPages) page = totalPages;
+    const start = (page - 1) * PER_PAGE;
+    const pageItems = filtered.slice(start, start + PER_PAGE);
+
+    pageItems.forEach(p => {
+      const el = document.createElement('div');
+      el.className = 'program-card';
+      el.innerHTML = `
+        <div class="logo">${p.uniName ? (p.uniName[0]||'U') : 'U'}</div>
+        <div style="flex:1">
+          <div style="display:flex; align-items:center; gap:12px; justify-content:space-between;">
+            <div>
+              <a href="university.html?id=${encodeURIComponent(p.uniId)}" style="font-weight:700; font-size:16px; color:var(--text); text-decoration:none;">
+                ${escapeHtml(p.title)}
+              </a>
+              <div class="small-muted" style="margin-top:6px">${escapeHtml(p.uniName)} · ${escapeHtml(p.city || '')}</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="pill">${p.level ? (p.level === 'bachelor' ? 'Бакалавр' : p.level === 'master' ? 'Магистр' : (p.level||'')) : ''}</div>
+              <div class="small-muted" style="margin-top:8px">${p.lang ? p.lang.toUpperCase() : ''}</div>
+            </div>
           </div>
-          <div style="min-width:80px; text-align:right;">
-            <div class="muted-note small">${escapeHtml(p.degree || '')}</div>
-            <div class="muted-note small">${escapeHtml(p.language || '')}</div>
+          <p class="muted-note" style="margin-top:10px">${escapeHtml(p.desc || '')}</p>
+          <div style="margin-top:10px; display:flex; gap:10px;">
+            <a class="btn ghost" href="university.html?id=${encodeURIComponent(p.uniId)}">Подробнее о вузе</a>
+            <a class="btn primary" href="admission.html?uni=${encodeURIComponent(p.uniId)}&program=${encodeURIComponent(p.id)}">Подать заявление</a>
           </div>
-        </div>
-        <div style="display:flex; gap:8px; margin-top:10px;">
-          <button class="btn ghost btnView" data-id="${p.id}">Подробнее</button>
-          <a class="btn primary" href="admission.html">Подать заявление</a>
         </div>
       `;
-      grid.appendChild(div);
-
-      div.querySelector('.btnView').addEventListener('click', async (e) => {
-        const id = e.target.dataset.id;
-        await showDetail(id);
-      });
+      programsGrid.appendChild(el);
     });
 
-    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-    pageInfo.textContent = `${page} / ${totalPages}`;
+    progPageInfo.textContent = `${page} / ${totalPages}`;
+    progPrev.disabled = page <= 1;
+    progNext.disabled = page >= totalPages;
   }
 
-  async function showDetail(id) {
-    detail.innerHTML = '<p class="muted-note">Загрузка...</p>';
-    try {
-      let p;
-      if (window.DataHub && typeof DataHub.fetchProgramById === 'function') {
-        p = await DataHub.fetchProgramById(id);
-      } else {
-        const resp = await fetch(`/api/programs/${encodeURIComponent(id)}`);
-        p = resp.ok ? await resp.json() : null;
-      }
-      if (!p) {
-        detail.innerHTML = '<p class="muted-note">Не удалось загрузить программу.</p>';
-        return;
-      }
-      detail.innerHTML = `
-        <h4 style="margin:0 0 8px 0;">${escapeHtml(p.title)}</h4>
-        <div class="muted-note small">Уровень: ${escapeHtml(p.degree || '-') } · Язык: ${escapeHtml(p.language || '-')}</div>
-        <p style="margin-top:10px;">${escapeHtml(p.description || p.syllabus || 'Описание отсутствует')}</p>
-        <hr>
-        <div><strong>Требования:</strong><p class="muted-note">${escapeHtml(p.requirements || 'Не указаны')}</p></div>
-        <div style="margin-top:8px;"><strong>Длительность:</strong> <span class="muted-note">${p.duration_months ? p.duration_months + ' мес.' : '-'}</span></div>
-        <div style="margin-top:8px;"><strong>Тариф:</strong> <span class="muted-note">${p.tuition ? p.tuition : '-'}</span></div>
-      `;
-    } catch (err) {
-      console.error(err);
-      detail.innerHTML = '<p class="muted-note">Ошибка при загрузке.</p>';
-    }
+  // escape helper
+  function escapeHtml(s = '') {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   }
 
+  // search + filters
   function applyFilters() {
-    const q = qInput.value.trim().toLowerCase();
-    const deg = degreeFilter.value;
-    const lang = langFilter.value;
-    filtered = programs.filter(p => {
-      if (deg && String(p.degree || '') !== deg) return false;
-      if (lang && String(p.language || '') !== lang) return false;
-      if (q) {
-        const txt = ((p.title||'') + ' ' + (p.description||'') + ' ' + (p.tags||'')).toLowerCase();
-        if (!txt.includes(q)) return false;
-      }
-      return true;
+    const q = (progQ.value || '').trim().toLowerCase();
+    const level = (progLevel.value || '').toLowerCase();
+    const lang = (progLang.value || '').toLowerCase();
+
+    filtered = allPrograms.filter(p => {
+      if (level && String(p.level || '') !== level) return false;
+      if (lang && String((p.lang||'').toLowerCase()) !== lang) return false;
+      if (!q) return true;
+      // search across title, uniName, city, desc and id
+      const hay = (p.title + ' ' + p.uniName + ' ' + (p.city||'') + ' ' + (p.desc||'') + ' ' + (p.uniId||'')).toLowerCase();
+      return hay.includes(q) || hay.replace(/\s+/g,'').includes(q.replace(/\s+/g,'')); // also match without spaces
     });
+
     page = 1;
-    renderGridPage();
+    renderPrograms();
   }
 
-  // pagination
-  prevPage.addEventListener('click', () => {
-    if (page > 1) { page--; renderGridPage(); }
-  });
-  nextPage.addEventListener('click', () => {
-    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-    if (page < totalPages) { page++; renderGridPage(); }
-  });
+  // events
+  progSearch.addEventListener('submit', (e) => { e.preventDefault(); applyFilters(); });
+  progQ.addEventListener('input', () => { setTimeout(applyFilters, 180); });
+  progLevel.addEventListener('change', applyFilters);
+  progLang.addEventListener('change', applyFilters);
 
-  btnSearch.addEventListener('click', applyFilters);
-  btnReset.addEventListener('click', () => {
-    qInput.value = '';
-    degreeFilter.value = '';
-    langFilter.value = '';
-    filtered = programs.slice();
-    page = 1;
-    renderGridPage();
+  progReset.addEventListener('click', () => {
+    progQ.value = ''; progLevel.value = ''; progLang.value = '';
+    filtered = allPrograms.slice(); page = 1; renderPrograms();
   });
 
-  // initial load programs
-  async function loadPrograms() {
-    grid.innerHTML = '<p class="muted-note">Загрузка программ...</p>';
-    try {
-      let list = [];
-      if (window.DataHub && typeof DataHub.fetchPrograms === 'function') {
-        list = await DataHub.fetchPrograms();
-      } else {
-        const resp = await fetch('/api/programs');
-        list = resp.ok ? await resp.json() : [];
-      }
-      programs = Array.isArray(list) ? list : [];
-      filtered = programs.slice();
-      renderGridPage();
-    } catch (err) {
-      console.error(err);
-      grid.innerHTML = '<p class="muted-note">Ошибка загрузки программ.</p>';
-    }
-  }
+  progPrev.addEventListener('click', () => { if (page > 1) { page--; renderPrograms(); scrollToTop(); } });
+  progNext.addEventListener('click', () => { const total = Math.max(1, Math.ceil(filtered.length / PER_PAGE)); if (page < total) { page++; renderPrograms(); scrollToTop(); } });
 
-  loadPrograms();
+  function scrollToTop() { window.scrollTo({ top: 150, behavior: 'smooth' }); }
+
+  // initial load
+  await loadPrograms();
 });
 </script>
 
