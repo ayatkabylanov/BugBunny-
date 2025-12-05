@@ -1,0 +1,121 @@
+{
+  "universities": [
+    {
+      "id": "kaznu",
+      "name": "Казахский национальный университет имени аль-Фараби (КазНУ)",
+      "city": "Алматы",
+      "rating": 5,
+      "short_desc": "Крупнейший классический вуз Казахстана с широкой научной и международной деятельностью.",
+      "long_desc": "КазНУ основан в 1934 году и предлагает обучение на 16 факультетах, включая естественные, гуманитарные и технические науки. Университет активно участвует в международных программах.",
+      "student_count": 20000,
+      "faculty_count": 2000,
+      "programs_count": 180,
+      "contact": {
+        "phone": "+7 (727) 377-33-33",
+        "email": "info@kaznu.edu.kz",
+        "address": "пр. Аль-Фараби, 71, Алматы"
+      },
+      "gallery": [
+        "assets/images/kaznu-1.jpg"
+      ],
+      "partners": [
+        { "partner_name": "University of Cambridge", "country": "UK" },
+        { "partner_name": "Moscow State University", "country": "Russia" }
+      ],
+      "tour": "https://3dtour.kaznu.kz"
+    },
+    {
+      "id": "aues",
+      "name": "Алматинский университет энергетики и связи (АУЭС)",
+      "city": "Алматы",
+      "rating": 4.7,
+      "short_desc": "Ведущий вуз в области энергетики, связи и ИТ.",
+      "long_desc": "АУЭС образован на базе Алматинского энергетического института. Реализует программы в области энергетики, телекоммуникаций и ИТ.",
+      "student_count": 8000,
+      "faculty_count": 700,
+      "programs_count": 60,
+      "contact": {
+        "phone": "+7 (727) 323-11-75",
+        "email": "aues@aues.kz",
+        "address": "ул. Байтурсынова, 126/1, Алматы"
+      },
+      "gallery": [
+        "assets/images/aues-1.jpg"
+      ],
+      "partners": [
+        { "partner_name": "Anhalt University", "country": "Germany" }
+      ],
+      "tour": "https://vr.aues.kz"
+    },
+    {
+      "id": "kbtu",
+      "name": "Казахстанско-Британский технический университет (КБТУ)",
+      "city": "Алматы",
+      "rating": 4.9,
+      "short_desc": "Элитный технический вуз с англоязычными программами и международными дипломами.",
+      "long_desc": "КБТУ специализируется на инженерных и ИТ-программах, сотрудничает с зарубежными вузами и промышленными партнёрами.",
+      "student_count": 5000,
+      "faculty_count": 400,
+      "programs_count": 50,
+      "contact": {
+        "phone": "+7 (727) 357-42-42",
+        "email": "info@kbtu.kz",
+        "address": "ул. Толе Би, 59, Алматы"
+      },
+      "gallery": [
+        "assets/images/kbtu-1.jpg"
+      ],
+      "partners": [
+        { "partner_name": "London School of Economics", "country": "UK" }
+      ],
+      "tour": ""
+    },
+    {
+      "id": "iitu",
+      "name": "Международный университет информационных технологий (МУИТ)",
+      "city": "Алматы",
+      "rating": 4.8,
+      "short_desc": "Университет с сильной специализацией в ИТ и международными связями.",
+      "long_desc": "МУИТ предлагает программы в сферах программной инженерии, кибербезопасности, медиа и менеджмента.",
+      "student_count": 6000,
+      "faculty_count": 500,
+      "programs_count": 40,
+      "contact": {
+        "phone": "+7 (727) 320-00-00",
+        "email": "reception@iitu.edu.kz",
+        "address": "ул. Манаса, 34/1, Алматы"
+      },
+      "gallery": [
+        "assets/images/iitu-1.jpg"
+      ],
+      "partners": [
+        { "partner_name": "KAIST", "country": "South Korea" },
+        { "partner_name": "Microsoft", "country": "USA" }
+      ],
+      "tour": "https://tour.iitu.kz"
+    },
+    {
+      "id": "aitu",
+      "name": "Astana IT University (АйТУ)",
+      "city": "Астана",
+      "rating": 4.6,
+      "short_desc": "Современный ИТ-вуз нового поколения с инновационными программами.",
+      "long_desc": "Astana IT University — технологический университет в столице Казахстана. Фокус на AI, Data Science, кибербезопасность.",
+      "student_count": 3000,
+      "faculty_count": 250,
+      "programs_count": 30,
+      "contact": {
+        "phone": "+7 (7172) 645-710",
+        "email": "info@astanait.edu.kz",
+        "address": "пр. Мәңгілік Ел, блок C1, Астана"
+      },
+      "gallery": [
+        "assets/images/aitu-1.jpg"
+      ],
+      "partners": [
+        { "partner_name": "SAP University Alliances", "country": "Germany" }
+      ],
+      "tour": "https://tour.astanait.edu.kz"
+    }
+  ]
+}

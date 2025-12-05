@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Академические программы — DataHub ВУЗ-ов «РК»</title>
+
+  <!-- общий стиль -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+  <style>
+    /* Локальные стили страницы программ */
+    .programs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .program-card {
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .program-meta { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .program-title { font-weight:700; font-size:16px; margin:0; }
+    .program-desc { color:var(--muted); font-size:14px; margin:0; line-height:1.4; }
+
+    .filters { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:8px; }
+    .filters select, .filters input { min-width:160px; }
+
+    .detail-panel { margin-top:12px; }
+    .detail-panel .card { padding:16px; }
+    @media (max-width:980px) {
+      .programs-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== UNIFIED HEADER ========== -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
+      <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"></rect>
+          <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div style="line-height:1;">
+        <div style="font-weight:700; color:var(--text); font-size:16px;">DataHub ВУЗ-ов «РК»</div>
+        <div style="font-size:12px; color:var(--muted);">Каталог университетов</div>
+      </div>
+    </a>
+
+    <nav class="main-nav">
+      <a class="nav-link" href="index.html">Главная</a>
+      <a class="nav-link" href="university.html">Об университете</a>
+      <a class="nav-link" href="programs.html">Программы</a>
+      <a class="nav-link" href="admission.html">Приём</a>
+      <a class="nav-link" href="compare.html">Сравнение</a>
+      <a class="nav-link" href="partners.html">Партнёры</a>
+      <a class="nav-link" href="tour.html">3D-тур</a>
+    </nav>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a href="admission.html" class="btn primary">Подать заявление</a>
+      <button class="burger" id="navBurger" type="button">
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- header helpers -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // active link
+  const path = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.main-nav .nav-link').forEach(a => {
+    if (a.getAttribute('href') === path) a.classList.add('active');
+  });
+
+  const burger = document.getElementById('navBurger');
+  const nav = document.querySelector('.main-nav');
+  if (burger && nav) {
+    burger.addEventListener('click', () => nav.classList.toggle('mobile-open'));
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 980 && nav.classList.contains('mobile-open')) {
+        if (!nav.contains(e.target) && !burger.contains(e.target)) nav.classList.remove('mobile-open');
+      }
+    });
+  }
+
+  // adjust body padding to header height
+  const header = document.querySelector('.site-header');
+  function adjustPad(){ document.body.style.paddingTop = header.getBoundingClientRect().height + 'px'; }
+  adjustPad();
+  window.addEventListener('resize', adjustPad);
+});
+</script>
+
+<!-- ========== MAIN ========== -->
+<main class="main-content">
+  <div class="card">
+    <h2>Академические программы</h2>
+    <p class="muted-note">Поиск и просмотр образовательных программ университетов. Выберите программу, чтобы увидеть детали и требования.</p>
+
+    <div class="filters" style="margin-top:12px;">
+      <input id="qInput" type="search" placeholder="Поиск по названию или ключевым словам">
+      <select id="degreeFilter">
+        <option value="">Все уровни</option>
+        <option value="Bachelor">Бакалавриат</option>
+        <option value="Master">Магистратура</option>
+        <option value="PhD">PhD</option>
+      </select>
+      <select id="langFilter">
+        <option value="">Все языки</option>
+        <option value="Kazakh">Kazakh</option>
+        <option value="Russian">Russian</option>
+        <option value="English">English</option>
+      </select>
+      <button id="btnSearch" class="btn primary">Поиск</button>
+      <button id="btnReset" class="btn ghost">Сброс</button>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:20px; margin-top:14px; align-items:flex-start; flex-wrap:wrap;">
+    <section style="flex:1 1 640px; min-width:320px;">
+      <div id="programsGrid" class="programs-grid">
+        <p class="muted-note">Загрузка программ...</p>
+      </div>
+
+      <nav id="pagination" class="pagination" style="margin-top:16px; display:flex; gap:8px; align-items:center; justify-content:center;">
+        <button id="prevPage" class="btn ghost">← Назад</button>
+        <span id="pageInfo" class="small">1 / 1</span>
+        <button id="nextPage" class="btn ghost">Вперёд →</button>
+      </nav>
+    </section>
+
+    <aside style="width:360px; min-width:260px;">
+      <div class="card detail-panel" id="detailPanel">
+        <h3>Детали программы</h3>
+        <div id="detailContent" class="muted-note">Выберите программу слева, чтобы увидеть подробности.</div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- ========== FOOTER ========== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <strong>DataHub ВУЗ-ов «РК»</strong><br>
+      <span class="small muted-note">Контакты: info@datahub.kz</span>
+    </div>
+    <div class="small muted-note">Политика конфиденциальности · Помощь</div>
+  </div>
+</footer>
+
+<!-- общий скрипт (если есть) -->
+<script src="assets/js/app.js" defer></script>
+
+<!-- локальная логика программы -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const grid = document.getElementById('programsGrid');
+  const detail = document.getElementById('detailContent');
+  const qInput = document.getElementById('qInput');
+  const degreeFilter = document.getElementById('degreeFilter');
+  const langFilter = document.getElementById('langFilter');
+  const btnSearch = document.getElementById('btnSearch');
+  const btnReset = document.getElementById('btnReset');
+  const prevPage = document.getElementById('prevPage');
+  const nextPage = document.getElementById('nextPage');
+  const pageInfo = document.getElementById('pageInfo');
+
+  let programs = [];
+  let filtered = [];
+  let page = 1;
+  const PAGE_SIZE = 8;
+
+  function escapeHtml(s){ if (!s) return ''; return String(s).replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]); }
+
+  function renderGridPage() {
+    grid.innerHTML = '';
+    const start = (page-1)*PAGE_SIZE;
+    const slice = filtered.slice(start, start + PAGE_SIZE);
+    if (!slice.length) {
+      grid.innerHTML = '<p class="muted-note">Ничего не найдено.</p>';
+      pageInfo.textContent = '0 / 0';
+      return;
+    }
+    slice.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'program-card';
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; gap:8px;">
+          <div style="flex:1;">
+            <h4 class="program-title">${escapeHtml(p.title)}</h4>
+            <p class="program-desc">${escapeHtml(p.description ? (p.description.slice(0,140)) : '')}</p>
+          </div>
+          <div style="min-width:80px; text-align:right;">
+            <div class="muted-note small">${escapeHtml(p.degree || '')}</div>
+            <div class="muted-note small">${escapeHtml(p.language || '')}</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button class="btn ghost btnView" data-id="${p.id}">Подробнее</button>
+          <a class="btn primary" href="admission.html">Подать заявление</a>
+        </div>
+      `;
+      grid.appendChild(div);
+
+      div.querySelector('.btnView').addEventListener('click', async (e) => {
+        const id = e.target.dataset.id;
+        await showDetail(id);
+      });
+    });
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    pageInfo.textContent = `${page} / ${totalPages}`;
+  }
+
+  async function showDetail(id) {
+    detail.innerHTML = '<p class="muted-note">Загрузка...</p>';
+    try {
+      let p;
+      if (window.DataHub && typeof DataHub.fetchProgramById === 'function') {
+        p = await DataHub.fetchProgramById(id);
+      } else {
+        const resp = await fetch(`/api/programs/${encodeURIComponent(id)}`);
+        p = resp.ok ? await resp.json() : null;
+      }
+      if (!p) {
+        detail.innerHTML = '<p class="muted-note">Не удалось загрузить программу.</p>';
+        return;
+      }
+      detail.innerHTML = `
+        <h4 style="margin:0 0 8px 0;">${escapeHtml(p.title)}</h4>
+        <div class="muted-note small">Уровень: ${escapeHtml(p.degree || '-') } · Язык: ${escapeHtml(p.language || '-')}</div>
+        <p style="margin-top:10px;">${escapeHtml(p.description || p.syllabus || 'Описание отсутствует')}</p>
+        <hr>
+        <div><strong>Требования:</strong><p class="muted-note">${escapeHtml(p.requirements || 'Не указаны')}</p></div>
+        <div style="margin-top:8px;"><strong>Длительность:</strong> <span class="muted-note">${p.duration_months ? p.duration_months + ' мес.' : '-'}</span></div>
+        <div style="margin-top:8px;"><strong>Тариф:</strong> <span class="muted-note">${p.tuition ? p.tuition : '-'}</span></div>
+      `;
+    } catch (err) {
+      console.error(err);
+      detail.innerHTML = '<p class="muted-note">Ошибка при загрузке.</p>';
+    }
+  }
+
+  function applyFilters() {
+    const q = qInput.value.trim().toLowerCase();
+    const deg = degreeFilter.value;
+    const lang = langFilter.value;
+    filtered = programs.filter(p => {
+      if (deg && String(p.degree || '') !== deg) return false;
+      if (lang && String(p.language || '') !== lang) return false;
+      if (q) {
+        const txt = ((p.title||'') + ' ' + (p.description||'') + ' ' + (p.tags||'')).toLowerCase();
+        if (!txt.includes(q)) return false;
+      }
+      return true;
+    });
+    page = 1;
+    renderGridPage();
+  }
+
+  // pagination
+  prevPage.addEventListener('click', () => {
+    if (page > 1) { page--; renderGridPage(); }
+  });
+  nextPage.addEventListener('click', () => {
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (page < totalPages) { page++; renderGridPage(); }
+  });
+
+  btnSearch.addEventListener('click', applyFilters);
+  btnReset.addEventListener('click', () => {
+    qInput.value = '';
+    degreeFilter.value = '';
+    langFilter.value = '';
+    filtered = programs.slice();
+    page = 1;
+    renderGridPage();
+  });
+
+  // initial load programs
+  async function loadPrograms() {
+    grid.innerHTML = '<p class="muted-note">Загрузка программ...</p>';
+    try {
+      let list = [];
+      if (window.DataHub && typeof DataHub.fetchPrograms === 'function') {
+        list = await DataHub.fetchPrograms();
+      } else {
+        const resp = await fetch('/api/programs');
+        list = resp.ok ? await resp.json() : [];
+      }
+      programs = Array.isArray(list) ? list : [];
+      filtered = programs.slice();
+      renderGridPage();
+    } catch (err) {
+      console.error(err);
+      grid.innerHTML = '<p class="muted-note">Ошибка загрузки программ.</p>';
+    }
+  }
+
+  loadPrograms();
+});
+</script>
+
+</body>
+</html>

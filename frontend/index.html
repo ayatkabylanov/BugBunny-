@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DataHub ВУЗ-ов «РК» — Каталог вузов</title>
+
+  <!-- основной CSS проекта -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+  <style>
+    /* --- гарантия что только одна шапка и она фиксирована --- */
+    .site-header {
+      position: fixed;
+      inset: 0 0 auto 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;            /* максимум, чтобы не перекрывался контент */
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+      background: linear-gradient(180deg, rgba(2,6,23,0.98), rgba(2,6,23,0.9));
+      padding: 10px 0;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.45);
+    }
+
+    .header-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--container-pad);
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    /* навигация */
+    .main-nav { display:flex; gap:10px; align-items:center; }
+    .main-nav .nav-link { color:var(--muted); text-decoration:none; padding:8px 12px; border-radius:8px; }
+    .main-nav .nav-link.active { color:var(--text); background: rgba(255,255,255,0.02); }
+
+    /* мобильный бургер */
+    .burger { display:none; width:44px; height:44px; align-items:center; justify-content:center; border-radius:8px; cursor:pointer; }
+    .burger div { width:20px; height:2px; background:var(--text); margin:3px 0; border-radius:2px; }
+
+    /* важный отступ — чтобы содержимое не скрывалось под фиксированной шапкой */
+    main.main-content {
+      padding-top: 92px; /* подогнать под реальную высоту header */
+      padding-bottom: 40px;
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    /* если на странице появится всплывающее меню — ограничим его поведение */
+    .main-nav.mobile-open {
+      position: absolute;
+      top: 62px;
+      right: 20px;
+      background: var(--surface);
+      padding: 12px;
+      border-radius: 10px;
+      display:flex;
+      flex-direction:column;
+      min-width: 200px;
+      box-shadow: var(--shadow);
+    }
+
+    /* thumb fix: гарантируем, что все карточки поверх main находятся ниже header */
+    .card, footer, section {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* адаптив */
+    @media (max-width: 980px){
+      .main-nav { display:none; }
+      .burger { display:flex; }
+      .header-inner { padding: 0 14px; }
+      main.main-content { padding-top: 100px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ========== HEADER (единственный) ========== -->
+  <header class="site-header" role="banner" aria-label="Верхнее меню">
+    <div class="header-inner">
+      <div style="display:flex; gap:12px; align-items:center;">
+        <a href="index.html" style="display:flex; gap:10px; align-items:center; text-decoration:none;">
+          <svg width="44" height="44" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="1" y="1" width="22" height="22" rx="5" fill="#0b1220"></rect>
+            <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <div style="line-height:1;">
+            <div style="font-weight:700; color:var(--text);">DataHub ВУЗ-ов «РК»</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:2px;">Каталог университетов</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="main-nav" aria-label="Главная навигация">
+        <a href="index.html" class="nav-link active">Главная</a>
+        <a href="university.html" class="nav-link">Об университете</a>
+        <a href="programs.html" class="nav-link">Академ. программы</a>
+        <a href="admission.html" class="nav-link">Приём</a>
+        <a href="compare.html" class="nav-link">Сравнение</a>
+        <a href="partners.html" class="nav-link">Партнёры</a>
+        <a href="tour.html" class="nav-link">3D-тур</a>
+      </nav>
+
+      <div style="display:flex; gap:10px; align-items:center;">
+        <a href="admission.html" class="btn primary" style="padding:8px 12px; font-size:14px;">Подать заявление</a>
+        <div class="burger" id="navBurger" title="Открыть меню" aria-hidden="false">
+          <div></div><div></div><div></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <main class="main-content" role="main">
+    <!-- HERO / SEARCH -->
+    <section class="card hero" style="margin: 6px 0;">
+      <div class="hero-inner" style="display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap;">
+        <div style="flex:1; min-width:260px;">
+          <h1 style="margin:0 0 8px 0;">Найдите университет своей мечты в Казахстане</h1>
+          <p class="lead">Сравнивайте вузы, изучайте академические программы, подавайте заявления и смотрите виртуальные 3D-туры.</p>
+
+          <form id="searchForm" class="search-form" style="margin-top:14px;">
+            <input id="searchQ" type="search" placeholder="Название, направление, город" aria-label="Поиск">
+            <select id="filterRegion">
+              <option value="">Все регионы</option>
+              <option value="almaty">Алматы</option>
+              <option value="nursultan">Нур-Султан</option>
+            </select>
+            <button type="submit" class="btn primary">Поиск</button>
+            <button type="button" id="btnAdvanced" class="btn ghost">Расширенный поиск</button>
+          </form>
+
+          
+
+        </div>
+
+        <aside style="width:320px; min-width:240px;">
+          <div class="card" style="margin-bottom:12px;">
+            <h3>Популярные вузы</h3>
+            <ul id="popularList">
+              <li><a href="university.html?id=kznu">КазНУ им. аль-Фараби</a> · Алматы</li>
+              <li><a href="university.html?id=aues">АУЭС — Университет энерго-связи</a> · Алматы</li>
+              <li><a href="university.html?id=kbt u">КБТУ — Казахстанско-Британский Технический Университет</a> · Алматы</li>
+              <li><a href="university.html?id=mu it">МУИТ — Международный Университет ИТ</a> · Алматы</li>
+              <li><a href="university.html?id=aitu">AITU — Astana IT University</a> · Астана</li>
+            </ul>
+
+          </div>
+
+          <div class="card">
+            <h4>Фильтры</h4>
+            <label class="small">Сортировать по</label>
+            <select id="sortBy">
+              <option value="">Рейтингу</option>
+              <option value="students">По количеству студентов</option>
+            </select>
+            <div style="margin-top:10px;">
+              <button id="btnReload" class="btn ghost">Обновить</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- LIST -->
+    <section id="univList" class="card" style="margin-top:14px;">
+      <h3>Список университетов</h3>
+      <div id="grid" class="card-grid" style="margin-top:12px;">
+        <!-- сюда рендерятся карточки -->
+      </div>
+
+      <nav id="pagination" class="pagination" style="margin-top:18px; display:flex; gap:8px; align-items:center; justify-content:center;">
+        <button id="prevPage" class="btn ghost">← Назад</button>
+        <span id="pageInfo" class="small">1 / 1</span>
+        <button id="nextPage" class="btn ghost">Вперёд →</button>
+      </nav>
+    </section>
+
+    <!-- Info block -->
+    <section class="card" style="margin-top:14px;">
+      <h3>О проекте</h3>
+      <p class="small">DataHub — единый каталог университетов Республики Казахстан. Мы собираем программы, условия приёма и 3D-туры, чтобы помочь абитуриентам и партнёрам.</p>
+    </section>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="site-footer" style="margin-top:20px;">
+    <div class="container footer-inner" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+      <div>
+        <strong>DataHub ВУЗ-ов «РК»</strong><br>
+        <span class="small muted-note">Контакты: <a href="mailto:info@datahub.kz">info@datahub.kz</a></span>
+      </div>
+      <div class="small muted-note">
+        <a href="#" class="muted-note">Политика конфиденциальности</a> · <a href="#" class="muted-note">Помощь</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- общий скрипт (внешний) -->
+  <script src="assets/js/app.js" defer></script>
+
+  <!-- локальная логика: моб.меню, поиск, подгрузка популярных -->
+  <script defer>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const burger = document.getElementById('navBurger');
+      const nav = document.querySelector('.main-nav');
+
+      // Бургер — открывает/закрывает мобильное меню
+      burger.addEventListener('click', () => {
+        if (nav.classList.contains('mobile-open')) {
+          nav.classList.remove('mobile-open');
+          nav.style.display = '';
+        } else {
+          nav.classList.add('mobile-open');
+          nav.style.display = 'flex';
+        }
+      });
+
+      // Закрывать мобильное меню при клике вне меню
+      document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 980) {
+          if (!nav.contains(e.target) && !burger.contains(e.target)) {
+            nav.classList.remove('mobile-open');
+            nav.style.display = 'none';
+          }
+        }
+      });
+
+      // Подгружаем популярные вузы и начальный список карточек
+      try {
+        const list = await DataHub.fetchUniversities();
+        const popular = document.getElementById('popularList');
+        popular.innerHTML = '';
+        list.slice(0,6).forEach(u => {
+          const li = document.createElement('li');
+          li.style.marginBottom = '8px';
+          li.innerHTML = `<a href="university.html?id=${encodeURIComponent(u.id)}" style="color:var(--accent)">${DataHub.escapeHtml(u.name)}</a> <span class="small muted-note"> · ${DataHub.escapeHtml(u.city||'')}</span>`;
+          popular.appendChild(li);
+        });
+
+        // render cards
+        const container = document.getElementById('grid');
+        DataHub.renderUniversityCards(container, list.slice(0, 12));
+        document.getElementById('pageInfo').textContent = `1 / ${Math.max(1, Math.ceil(list.length / 12))}`;
+      } catch (err) {
+        console.warn('Не удалось загрузить список вузов', err);
+      }
+
+      // Поиск (простая demo-логика)
+      const searchForm = document.getElementById('searchForm');
+      searchForm.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        const q = document.getElementById('searchQ').value.trim();
+        const region = document.getElementById('filterRegion').value;
+        DataHub.fetchUniversities({ q, region }).then(list => {
+          const container = document.getElementById('grid');
+          DataHub.renderUniversityCards(container, list);
+        }).catch(err => console.warn(err));
+      });
+
+      // Кнопки пагинации (демо)
+      document.getElementById('prevPage').addEventListener('click', () => {
+        // реализацию пагинации можно добавить здесь
+      });
+      document.getElementById('nextPage').addEventListener('click', () => {
+        // реализацию пагинации можно добавить здесь
+      });
+    });
+  </script>
+</body>
+</html>

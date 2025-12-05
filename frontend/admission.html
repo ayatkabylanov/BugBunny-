@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Приём — DataHub ВУЗ-ов «РК»</title>
+
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+
+<!-- ===========================================================
+     FIXED HEADER (единый для всех страниц)
+=========================================================== -->
+<header class="site-header">
+  <div class="header-inner">
+
+    <!-- logo -->
+    <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
+      <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"></rect>
+          <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div style="line-height:1;">
+        <div style="font-weight:700; color:var(--text); font-size:16px;">DataHub ВУЗ-ов «РК»</div>
+        <div style="font-size:12px; color:var(--muted);">Каталог университетов</div>
+      </div>
+    </a>
+
+    <!-- navigation -->
+    <nav class="main-nav">
+      <a href="index.html" class="nav-link">Главная</a>
+      <a href="university.html" class="nav-link">Об университете</a>
+      <a href="programs.html" class="nav-link">Академ. программы</a>
+      <a href="admission.html" class="nav-link">Приём</a>
+      <a href="compare.html" class="nav-link">Сравнение</a>
+      <a href="partners.html" class="nav-link">Партнёры</a>
+      <a href="tour.html" class="nav-link">3D-тур</a>
+    </nav>
+
+    <!-- CTA -->
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a href="admission.html" class="btn primary">Подать заявление</a>
+
+      <button class="burger" id="navBurger" type="button">
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;border-radius:2px"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;border-radius:2px"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:3px 0;border-radius:2px"></span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- JS: mobile menu + active link + header spacing -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // highlight active menu item
+  const path = location.pathname.split('/').pop() || "index.html";
+  document.querySelectorAll(".main-nav .nav-link").forEach(a => {
+    if (a.getAttribute("href") === path) a.classList.add("active");
+  });
+
+  // burger
+  const burger = document.getElementById("navBurger");
+  const nav = document.querySelector(".main-nav");
+
+  burger.addEventListener("click", () => {
+    nav.classList.toggle("mobile-open");
+    nav.style.display = nav.classList.contains("mobile-open") ? "flex" : "";
+  });
+
+  document.addEventListener("click", (e) => {
+    if (window.innerWidth <= 980 && nav.classList.contains("mobile-open")) {
+      if (!nav.contains(e.target) && !burger.contains(e.target)) {
+        nav.classList.remove("mobile-open");
+      }
+    }
+  });
+
+  // adjust body padding to header height
+  function adjustPad() {
+    const h = document.querySelector(".site-header").getBoundingClientRect().height;
+    document.body.style.paddingTop = h + "px";
+  }
+  adjustPad();
+  window.addEventListener("resize", adjustPad);
+
+});
+</script>
+
+<!-- ===========================================================
+     MAIN CONTENT
+=========================================================== -->
+<main class="main-content">
+
+  <div class="card">
+    <h2 style="margin-bottom:6px;">Приём в университеты</h2>
+    <p class="muted-note">Узнайте требования, сроки подачи документов и доступные стипендии.</p>
+  </div>
+
+  <div class="card">
+    <h3>Требования к поступлению</h3>
+    <p id="reqText" class="muted-note">Загрузка требований...</p>
+
+    <hr>
+
+    <h3>Необходимые документы</h3>
+    <ul id="docsList" class="muted-note">
+      <li>Загрузка...</li>
+    </ul>
+
+    <hr>
+
+    <h3>Сроки подачи заявлений</h3>
+    <p id="datesText" class="muted-note">Загрузка сроков...</p>
+
+    <hr>
+
+    <h3>Стипендии и гранты</h3>
+    <p id="grantsText" class="muted-note">Загрузка данных о финансировании...</p>
+
+    <hr>
+
+    <h3>Подать заявление онлайн</h3>
+
+    <form id="applyForm" style="margin-top:10px;">
+      <input name="fullname" type="text" placeholder="Ваше ФИО" required>
+      <input name="email" type="email" placeholder="Email" required>
+      <input name="program" type="text" placeholder="Направление подготовки" required>
+      <button class="btn primary" type="submit">Отправить заявление</button>
+    </form>
+
+    <p id="applyStatus" class="muted-note" style="margin-top:10px;"></p>
+  </div>
+
+</main>
+
+<!-- ===========================================================
+     FOOTER
+=========================================================== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <strong>DataHub ВУЗ-ов «РК»</strong><br>
+      <span class="small muted-note">Контакты: info@datahub.kz</span>
+    </div>
+    <div class="small muted-note">
+      Политика конфиденциальности · Помощь
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/app.js"></script>
+
+<script>
+// Fetch admission info
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const data = await DataHub.fetchAdmissionInfo();
+
+    document.getElementById("reqText").textContent = data.requirements || "Нет данных.";
+    document.getElementById("datesText").textContent = data.dates || "Нет данных.";
+    document.getElementById("grantsText").textContent = data.grants || "Нет данных.";
+
+    const docs = data.documents || [];
+    const ul = document.getElementById("docsList");
+    ul.innerHTML = "";
+    docs.forEach(d => {
+      const li = document.createElement("li");
+      li.textContent = d;
+      ul.appendChild(li);
+    });
+
+  } catch (err) {
+    document.getElementById("reqText").textContent = "Ошибка загрузки данных.";
+  }
+});
+
+// Submit application
+document.getElementById("applyForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const status = document.getElementById("applyStatus");
+  status.textContent = "Отправка...";
+
+  const formData = Object.fromEntries(new FormData(e.target).entries());
+
+  try {
+    const res = await DataHub.submitApplication(formData);
+    status.textContent = "Заявление успешно отправлено!";
+  } catch {
+    status.textContent = "Ошибка отправки.";
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Университет — DataHub ВУЗ-ов «РК»</title>
+
+<link rel="stylesheet" href="assets/css/styles.css">
+
+<style>
+  /* Local styles */
+  .uni-header { display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
+  .uni-logo { width:110px; height:110px; border-radius:14px; background:#0d172a;
+              display:flex; align-items:center; justify-content:center; font-size:40px; color:#6ee7b7; }
+
+  .uni-info { flex:1; }
+  .numbers-box { display:flex; flex-wrap:wrap; gap:20px; margin-top:16px; }
+  .numbers-box .card { flex:1 1 160px; text-align:center; }
+
+  .gallery { display:flex; gap:12px; overflow-x:auto; margin-top:12px; padding-bottom:6px; }
+  .gallery img { width:220px; height:140px; object-fit:cover; border-radius:10px; }
+
+  .section-title { margin-top:24px; }
+  .partners-list div { padding:6px 0; border-bottom:1px dashed rgba(0,0,0,0.06); }
+
+  /* small responsive */
+  @media (max-width:700px){
+    .uni-header { flex-direction:column; align-items:flex-start; }
+    .uni-logo { width:84px; height:84px; font-size:32px; }
+  }
+</style>
+
+</head>
+<body>
+
+<!-- ===========================================================
+     HEADER (единый на всех страницах)
+=========================================================== -->
+<header class="site-header">
+  <div class="header-inner">
+
+    <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
+      <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"/>
+          <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div style="line-height:1;">
+        <div style="font-weight:700; color:var(--text); font-size:16px;">DataHub ВУЗ-ов «РК»</div>
+        <div style="font-size:12px; color:var(--muted);">Каталог университетов</div>
+      </div>
+    </a>
+
+    <nav class="main-nav">
+      <a class="nav-link" href="index.html">Главная</a>
+      <a class="nav-link" href="university.html">Об университете</a>
+      <a class="nav-link" href="programs.html">Программы</a>
+      <a class="nav-link" href="admission.html">Приём</a>
+      <a class="nav-link" href="compare.html">Сравнение</a>
+      <a class="nav-link" href="partners.html">Партнёры</a>
+      <a class="nav-link" href="tour.html">3D-тур</a>
+    </nav>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a href="admission.html" class="btn primary">Подать заявление</a>
+      <button class="burger" id="navBurger" type="button">
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;"></span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- Header JS helpers -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const path = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.main-nav .nav-link').forEach(a => {
+    if (a.getAttribute('href') === path) a.classList.add('active');
+  });
+
+  const b = document.getElementById('navBurger');
+  const nav = document.querySelector('.main-nav');
+  b.addEventListener('click', ()=> nav.classList.toggle('mobile-open'));
+  document.addEventListener('click',(e)=>{
+    if(window.innerWidth<=980 && nav.classList.contains('mobile-open')){
+      if(!nav.contains(e.target)&&!b.contains(e.target)) nav.classList.remove('mobile-open');
+    }
+  });
+
+  const h = document.querySelector('.site-header');
+  const setPad = ()=> document.body.style.paddingTop = h.getBoundingClientRect().height + 'px';
+  setPad(); window.addEventListener('resize', setPad);
+});
+</script>
+
+
+<!-- ===========================================================
+     MAIN CONTENT
+=========================================================== -->
+<main class="main-content">
+
+  <div id="uniContainer">
+    <div class="card">
+      <div class="uni-header">
+        <div class="uni-logo" id="uniLogo">U</div>
+        <div class="uni-info">
+          <h2 id="uniName">Загрузка...</h2>
+          <p class="muted-note" id="uniCity"></p>
+          <p class="muted-note" id="uniRating"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Описание</h3>
+      <p id="uniShort" class="muted-note"></p>
+      <p id="uniLong" style="margin-top:10px;"></p>
+
+      <h3 class="section-title">Галерея</h3>
+      <div id="gallery" class="gallery"></div>
+
+      <h3 class="section-title">Основные показатели</h3>
+      <div class="numbers-box">
+        <div class="card"><strong id="numStudents">—</strong><div class="muted-note small">Студентов</div></div>
+        <div class="card"><strong id="numFaculty">—</strong><div class="muted-note small">Преподавателей</div></div>
+        <div class="card"><strong id="numPrograms">—</strong><div class="muted-note small">Программ</div></div>
+      </div>
+
+      <h3 class="section-title">Контакты</h3>
+      <p id="uniContact" class="muted-note"></p>
+
+      <h3 class="section-title">Партнёры</h3>
+      <div id="uniPartners" class="partners-list"></div>
+
+    </div>
+  </div>
+</main>
+
+
+<!-- ===========================================================
+     FOOTER
+=========================================================== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div><strong>DataHub ВУЗ-ов «РК»</strong><br><span class="small muted-note">info@datahub.kz</span></div>
+    <div class="small muted-note">Политика конфиденциальности · Помощь</div>
+  </div>
+</footer>
+
+<script src="assets/js/app.js" defer></script>
+
+<!-- ВСТАВЬ ЭТО ПРЯМО В university.html ПЕРЕД СКРИПТОМ PAGE LOGIC -->
+<script>
+/* Встроенная локальная база университетов — используется, если fetch недоступен */
+window.UNIVERSITIES_DB = {
+  "universities": [
+    {
+      "id": "kaznu",
+      "name": "Казахский национальный университет имени аль-Фараби (КазНУ)",
+      "city": "Алматы",
+      "rating": 5,
+      "short_desc": "Крупнейший классический вуз Казахстана с широкой научной и международной деятельностью.",
+      "long_desc": "КазНУ основан в 1934 году и предлагает обучение на 16 факультетах.",
+      "student_count": 20000,
+      "faculty_count": 2000,
+      "programs_count": 180,
+      "contact": {
+        "phone": "+7 (727) 377-33-33",
+        "email": "info@kaznu.edu.kz",
+        "address": "пр. Аль-Фараби, 71, Алматы"
+      },
+      "gallery": ["assets/images/kaznu-1.jpg"],
+      "partners": [{"partner_name":"University of Cambridge","country":"UK"},{"partner_name":"Moscow State University","country":"Russia"}],
+      "tour": "https://3dtour.kaznu.kz"
+    },
+    {
+      "id": "aues",
+      "name": "Алматинский университет энергетики и связи (АУЭС)",
+      "city": "Алматы",
+      "rating": 4.7,
+      "short_desc": "Ведущий вуз в области энергетики, связи и ИТ.",
+      "long_desc": "АУЭС образован на базе Алматинского энергетического института.",
+      "student_count": 8000,
+      "faculty_count": 700,
+      "programs_count": 60,
+      "contact": {"phone":"+7 (727) 323-11-75","email":"aues@aues.kz","address":"ул. Байтурсынова, 126/1, Алматы"},
+      "gallery": ["assets/images/aues-1.jpg"],
+      "partners":[{"partner_name":"Anhalt University","country":"Germany"}],
+      "tour":"https://vr.aues.kz"
+    },
+    {
+      "id":"kbtu",
+      "name":"Казахстанско-Британский технический университет (КБТУ)",
+      "city":"Алматы","rating":4.9,
+      "short_desc":"Элитный технический вуз с англоязычными программами.",
+      "long_desc":"КБТУ специализируется на инженерных и ИТ-программах.",
+      "student_count":5000,"faculty_count":400,"programs_count":50,
+      "contact":{"phone":"+7 (727) 357-42-42","email":"info@kbtu.kz","address":"ул. Толе Би, 59, Алматы"},
+      "gallery":["assets/images/kbtu-1.jpg"],
+      "partners":[{"partner_name":"London School of Economics","country":"UK"}],
+      "tour":""
+    },
+    {
+      "id":"iitu",
+      "name":"Международный университет информационных технологий (МУИТ)",
+      "city":"Алматы","rating":4.8,
+      "short_desc":"Университет с сильной специализацией в ИТ.",
+      "long_desc":"МУИТ предлагает программы в программной инженерии и кибербезопасности.",
+      "student_count":6000,"faculty_count":500,"programs_count":40,
+      "contact":{"phone":"+7 (727) 320-00-00","email":"reception@iitu.edu.kz","address":"ул. Манаса, 34/1, Алматы"},
+      "gallery":["assets/images/iitu-1.jpg"],
+      "partners":[{"partner_name":"KAIST","country":"South Korea"},{"partner_name":"Microsoft","country":"USA"}],
+      "tour":"https://tour.iitu.kz"
+    },
+    {
+      "id":"aitu",
+      "name":"Astana IT University (АйТУ)",
+      "city":"Астана","rating":4.6,
+      "short_desc":"Современный ИТ-вуз нового поколения.",
+      "long_desc":"Astana IT University — технологический университет в столице Казахстана.",
+      "student_count":3000,"faculty_count":250,"programs_count":30,
+      "contact":{"phone":"+7 (7172) 645-710","email":"info@astanait.edu.kz","address":"пр. Мәңгілік Ел, блок C1, Астана"},
+      "gallery":["assets/images/aitu-1.jpg"],
+      "partners":[{"partner_name":"SAP University Alliances","country":"Germany"}],
+      "tour":"https://tour.astanait.edu.kz"
+    }
+  ]
+};
+</script>
+
+<!-- PAGE LOGIC — обработка с поддержкой отсутствия ?id=... -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const params = new URLSearchParams(location.search);
+  const id = params.get("id");
+
+  // helper: get DB either from window var or fetch
+  async function loadDB() {
+    if (window.UNIVERSITIES_DB && Array.isArray(window.UNIVERSITIES_DB.universities)) {
+      return window.UNIVERSITIES_DB;
+    }
+    const resp = await fetch('assets/data/universities.json');
+    if (!resp.ok) throw new Error('Не удалось загрузить локальные данные');
+    return await resp.json();
+  }
+
+  try {
+    const db = await loadDB();
+    const list = Array.isArray(db.universities) ? db.universities : [];
+
+    if (!id) {
+      // show list
+      const container = document.getElementById('uniContainer');
+      container.innerHTML = '';
+      const headerCard = document.createElement('div');
+      headerCard.className = 'card';
+      headerCard.innerHTML = '<h2>Выберите университет</h2><p class="muted-note">Кликните на университет, чтобы открыть его профиль.</p>';
+      container.appendChild(headerCard);
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(300px,1fr))';
+      grid.style.gap = '16px';
+      grid.style.marginTop = '12px';
+      list.forEach(u => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        const short = (u.short_desc||'').substring(0,160);
+        div.innerHTML = `
+          <div style="display:flex;gap:14px;align-items:center;">
+            <div style="width:72px;height:72px;border-radius:10px;background:#f0f6ff;display:flex;align-items:center;justify-content:center;font-weight:700;">
+              ${(u.name||' ')[0].toUpperCase()}
+            </div>
+            <div style="flex:1">
+              <a href="university.html?id=${encodeURIComponent(u.id)}" style="font-size:18px;font-weight:700;color:var(--text);text-decoration:none;">
+                ${u.name}
+              </a>
+              <div class="muted-note" style="margin-top:6px">${u.city || ''} · рейтинг: ${u.rating ?? '—'}</div>
+              <div class="muted-note" style="margin-top:8px">${short}</div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
+      container.appendChild(grid);
+      return;
+    }
+
+    // find specific
+    const uni = list.find(u => u.id === id);
+    if (!uni) {
+      document.getElementById("uniContainer").innerHTML = "<div class='card'><p class='muted-note'>Университет не найден (проверь ?id=...)</p></div>";
+      return;
+    }
+
+    // Fill UI
+    document.getElementById("uniName").textContent = uni.name || "—";
+    document.getElementById("uniCity").textContent = "Город: " + (uni.city || "—");
+    document.getElementById("uniRating").textContent = "Рейтинг: " + (uni.rating ?? "—");
+    document.getElementById("uniShort").textContent = uni.short_desc || "Нет краткого описания.";
+    document.getElementById("uniLong").textContent = uni.long_desc || "Нет подробного описания.";
+    document.getElementById("uniLogo").textContent = (uni.name || 'U')[0].toUpperCase();
+    document.getElementById("numStudents").textContent = uni.student_count ?? "—";
+    document.getElementById("numFaculty").textContent = uni.faculty_count ?? "—";
+    document.getElementById("numPrograms").textContent = uni.programs_count ?? "—";
+
+    // Contact
+    let c = "";
+    if (uni.contact) {
+      const obj = (typeof uni.contact === "string") ? (() => {
+        try { return JSON.parse(uni.contact); } catch { return null; }
+      })() : uni.contact;
+      if (obj) {
+        c = `${obj.phone ? `<div>📞 ${obj.phone}</div>` : ""}${obj.email ? `<div>✉️ <a href="mailto:${obj.email}">${obj.email}</a></div>` : ""}${obj.address ? `<div>📍 ${obj.address}</div>` : ""}`;
+      } else c = String(uni.contact);
+    }
+    document.getElementById("uniContact").innerHTML = c || "Нет данных";
+
+    // Gallery
+    const gal = document.getElementById("gallery"); gal.innerHTML = "";
+    const images = Array.isArray(uni.gallery) ? uni.gallery : (uni.gallery ? [uni.gallery] : []);
+    if (!images.length) gal.innerHTML = "<p class='muted-note'>Фотографии отсутствуют.</p>";
+    else images.forEach(src => { const img=document.createElement('img'); img.src=src; img.alt=uni.name||"Фото"; gal.appendChild(img); });
+
+    // Partners
+    const pl = document.getElementById("uniPartners"); pl.innerHTML = "";
+    if (Array.isArray(uni.partners) && uni.partners.length) {
+      uni.partners.forEach(p => {
+        const div = document.createElement('div');
+        const country = p.country ? ` — <span class="muted-note">${p.country}</span>` : "";
+        div.innerHTML = `<strong>${p.partner_name}</strong>${country}`;
+        pl.appendChild(div);
+      });
+    } else pl.innerHTML = "<p class='muted-note'>Партнёров нет.</p>";
+
+    if (uni.tour) {
+      const tourBlock = document.createElement('div'); tourBlock.style.marginTop='14px';
+      tourBlock.innerHTML = `<a class="btn ghost" href="${uni.tour}" target="_blank">Посмотреть 3D-тур</a>`;
+      gal.parentElement.appendChild(tourBlock);
+    }
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("uniContainer").innerHTML = "<div class='card'><p class='muted-note'>Ошибка: не удалось загрузить данные университетов.</p></div>";
+  }
+
+});
+</script>
+
+
+</body>
+</html>

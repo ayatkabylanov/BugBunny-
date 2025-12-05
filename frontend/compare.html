@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Сравнение вузов — DataHub ВУЗ-ов «РК»</title>
+
+  <!-- общий стиль (тот же, что на других страницах) -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+  <style>
+    /* Стили страницы сравнения */
+    .compare-container { display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; }
+    .left-panel { flex: 0 0 380px; min-width:260px; }
+    .right-panel { flex: 1 1 640px; min-width:300px; }
+
+    .univ-item { display:flex; gap:12px; align-items:center; padding:8px; border-radius:10px; background:rgba(255,255,255,0.01); margin-bottom:8px; }
+    .univ-item .meta { flex:1; }
+    .univ-item .meta h4 { margin:0 0 6px 0; font-size:15px; }
+    .univ-item .meta .muted { color:var(--muted); font-size:13px; }
+
+    .compare-table { width:100%; border-collapse: collapse; }
+    .compare-table th, .compare-table td { padding:12px; border-bottom: 1px dashed rgba(255,255,255,0.03); text-align:left; vertical-align:top; }
+    .compare-table th { background: rgba(255,255,255,0.02); font-weight:700; width:220px; }
+
+    .actions { display:flex; gap:10px; margin-bottom:12px; align-items:center; }
+    @media (max-width:980px){
+      .compare-container { flex-direction:column; }
+      .left-panel { order:2; }
+      .right-panel { order:1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================== HEADER (единый) ================== -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
+      <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"></rect>
+          <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div style="line-height:1;">
+        <div style="font-weight:700; color:var(--text); font-size:16px;">DataHub ВУЗ-ов «РК»</div>
+        <div style="font-size:12px; color:var(--muted);">Каталог университетов</div>
+      </div>
+    </a>
+
+    <nav class="main-nav">
+      <a class="nav-link" href="index.html">Главная</a>
+      <a class="nav-link" href="university.html">Об университете</a>
+      <a class="nav-link" href="programs.html">Академ. программы</a>
+      <a class="nav-link" href="admission.html">Приём</a>
+      <a class="nav-link" href="compare.html">Сравнение</a>
+      <a class="nav-link" href="partners.html">Партнёры</a>
+      <a class="nav-link" href="tour.html">3D-тур</a>
+    </nav>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a href="admission.html" class="btn primary">Подать заявление</a>
+      <button class="burger" id="navBurger" aria-label="Меню" title="Меню" type="button">
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- header helpers (active link, burger, spacing) -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // active link
+  const path = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.main-nav .nav-link').forEach(a => {
+    if (a.getAttribute('href') === path) a.classList.add('active');
+  });
+
+  // burger
+  const burger = document.getElementById('navBurger');
+  const nav = document.querySelector('.main-nav');
+  if (burger && nav) {
+    burger.addEventListener('click', () => nav.classList.toggle('mobile-open'));
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 980 && nav.classList.contains('mobile-open')) {
+        if (!nav.contains(e.target) && !burger.contains(e.target)) nav.classList.remove('mobile-open');
+      }
+    });
+  }
+
+  // adjust body padding to header
+  const header = document.querySelector('.site-header');
+  function adjustPad(){ document.body.style.paddingTop = header.getBoundingClientRect().height + 'px'; }
+  adjustPad();
+  window.addEventListener('resize', adjustPad);
+});
+</script>
+
+<!-- ================== MAIN ================== -->
+<main class="main-content">
+  <h2>Сравнение университетов</h2>
+  <p class="muted-note">Выберите до 3 вузов в левой колонке и нажмите "Сравнить" — таблица справа покажет основные параметры.</p>
+
+  <div class="compare-container" style="margin-top:18px;">
+    <!-- LEFT: selector -->
+    <aside class="left-panel">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong>Список ВУЗов</strong>
+          <button id="btnReset" class="btn ghost" title="Сбросить выбор">Сброс</button>
+        </div>
+
+        <div style="margin-top:10px;" class="actions">
+          <input id="qInput" type="search" placeholder="Поиск по названию" style="flex:1;">
+          <button id="btnSearch" class="btn ghost">Найти</button>
+        </div>
+
+        <div id="univListArea" style="margin-top:12px; max-height:520px; overflow:auto;">
+          <p class="muted-note">Загрузка списка...</p>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:8px; justify-content:space-between; align-items:center;">
+          <div class="small muted-note">Выбрано: <span id="selectedCount">0</span>/3</div>
+          <button id="btnCompare" class="btn primary" disabled>Сравнить</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: comparison result -->
+    <section class="right-panel">
+      <div class="card">
+        <h3>Таблица сравнения</h3>
+        <div id="compareArea">
+          <p class="muted-note">Выберите вузы слева и нажмите "Сравнить".</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- ================== FOOTER ================== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <strong>DataHub ВУЗ-ов «РК»</strong><br>
+      <span class="small muted-note">Контакты: info@datahub.kz</span>
+    </div>
+    <div class="small muted-note">Политика конфиденциальности · Помощь</div>
+  </div>
+</footer>
+
+<!-- подключаем общий скрипт (если есть) -->
+<script src="assets/js/app.js" defer></script>
+
+<!-- локальная логика страницы сравнения -->
+<script>
+document.getElementById('btnCompare').addEventListener('click', async () => {
+  const checked = Array.from(document.querySelectorAll('input[name="compare"]:checked')).map(i => i.value);
+  if (checked.length < 2) { alert('Выберите минимум 2 университета'); return; }
+
+  const db = await fetch('assets/data/universities.json').then(r => r.json());
+  const results = checked.map(id => db.universities.find(u => u.id === id)).filter(Boolean);
+
+  // рисуем простую таблицу
+  let html = '<table class="card" style="width:100%; border-collapse:collapse;"><thead><tr><th style="text-align:left;padding:10px">Параметр</th>';
+  results.forEach(r => html += `<th style="padding:10px;text-align:left">${r.name}</th>`);
+  html += '</tr></thead><tbody>';
+  const rows = [
+    ['Город', r => r.city],
+    ['Рейтинг', r => r.rating],
+    ['Студенты', r => r.student_count],
+    ['Преподаватели', r => r.faculty_count],
+    ['Программ', r => r.programs_count]
+  ];
+  rows.forEach(([label, fn]) => {
+    html += `<tr><td style="padding:10px;border-top:1px solid #eee">${label}</td>`;
+    results.forEach(r => html += `<td style="padding:10px;border-top:1px solid #eee">${fn(r)}</td>`);
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('compareResult').innerHTML = html;
+});
+</script>
+
+</body>
+</html>

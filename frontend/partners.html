@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Партнёры — DataHub ВУЗ-ов «РК»</title>
+
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+  <style>
+    /* Небольшие локальные стили страницы партнёров */
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .partner-card {
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding:12px;
+      border-radius:12px;
+      background: rgba(255,255,255,0.02);
+    }
+    .partner-logo {
+      width:74px;
+      height:74px;
+      border-radius:8px;
+      background: rgba(255,255,255,0.03);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color:var(--accent);
+      font-size:20px;
+      flex-shrink:0;
+    }
+    .partner-meta h4 { margin:0 0 6px 0; }
+    .muted-note.small { font-size:13px; color:var(--muted); }
+    .upload-preview { max-width:120px; max-height:80px; object-fit:cover; border-radius:6px; display:block; margin-top:8px; }
+    @media (max-width:980px) {
+      .partners-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+
+</head>
+<body>
+
+<!-- ========== HEADER (единый) ========== -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
+      <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"></rect>
+          <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div style="line-height:1;">
+        <div style="font-weight:700; color:var(--text); font-size:16px;">DataHub ВУЗ-ов «РК»</div>
+        <div style="font-size:12px; color:var(--muted);">Каталог университетов</div>
+      </div>
+    </a>
+
+    <nav class="main-nav">
+      <a class="nav-link" href="index.html">Главная</a>
+      <a class="nav-link" href="university.html">Об университете</a>
+      <a class="nav-link" href="programs.html">Академ. программы</a>
+      <a class="nav-link" href="admission.html">Приём</a>
+      <a class="nav-link" href="compare.html">Сравнение</a>
+      <a class="nav-link" href="partners.html">Партнёры</a>
+      <a class="nav-link" href="tour.html">3D-тур</a>
+    </nav>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a href="admission.html" class="btn primary">Подать заявление</a>
+      <button class="burger" id="navBurger" type="button" aria-label="Меню">
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+/* header helpers: active link, burger, header spacing */
+document.addEventListener('DOMContentLoaded', () => {
+  const path = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.main-nav .nav-link').forEach(a => {
+    if (a.getAttribute('href') === path) a.classList.add('active');
+  });
+
+  const burger = document.getElementById('navBurger');
+  const nav = document.querySelector('.main-nav');
+  if (burger && nav) {
+    burger.addEventListener('click', () => nav.classList.toggle('mobile-open'));
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 980 && nav.classList.contains('mobile-open')) {
+        if (!nav.contains(e.target) && !burger.contains(e.target)) nav.classList.remove('mobile-open');
+      }
+    });
+  }
+
+  const header = document.querySelector('.site-header');
+  function adjustPad(){ document.body.style.paddingTop = header.getBoundingClientRect().height + 'px'; }
+  adjustPad();
+  window.addEventListener('resize', adjustPad);
+});
+</script>
+
+<!-- ========== MAIN ========== -->
+<main class="main-content">
+  <div class="card">
+    <h2>Партнёры университетов</h2>
+    <p class="muted-note">Список международных и местных партнёров университетов: программы обмена, двойные дипломы и т.д.</p>
+  </div>
+
+  <div class="card" style="display:flex; gap:20px; flex-wrap:wrap;">
+    <!-- left: partner list -->
+    <div style="flex:1 1 520px; min-width:300px;">
+      <h3 style="margin-top:0;">Список партнёров</h3>
+
+      <div id="partnersArea" class="partners-grid" style="margin-top:12px;">
+        <p class="muted-note">Загрузка партнёров...</p>
+      </div>
+    </div>
+
+    <!-- right: add partner form -->
+    <aside style="width:360px; min-width:260px;">
+      <div class="card">
+        <h3>Добавить партнёра</h3>
+        <form id="partnerForm" enctype="multipart/form-data">
+          <label class="small">Название партнёра</label>
+          <input name="partner_name" type="text" placeholder="Partner University / Company" required>
+
+          <label class="small">Страна</label>
+          <input name="country" type="text" placeholder="Страна">
+
+          <label class="small">Связанные программы (JSON или CSV)</label>
+          <input name="programs" type="text" placeholder='["Exchange", "Dual Degree"]'>
+
+          <label class="small">Контакт (email или телефон)</label>
+          <input name="contact" type="text" placeholder="email@example.com">
+
+          <label class="small">Вебсайт</label>
+          <input name="website" type="url" placeholder="https://...">
+
+          <label class="small">Логотип (опционально)</label>
+          <input id="logoInput" name="logo" type="file" accept="image/*">
+
+          <img id="logoPreview" class="upload-preview" style="display:none;" alt="preview">
+
+          <div style="margin-top:12px; display:flex; gap:8px;">
+            <button type="submit" class="btn primary">Добавить партнёра</button>
+            <button type="button" id="btnClear" class="btn ghost">Очистить</button>
+          </div>
+
+          <p id="partnerStatus" class="muted-note small" style="margin-top:10px;"></p>
+        </form>
+      </div>
+    </aside>
+  </div>
+
+</main>
+
+<!-- ========== FOOTER ========== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <strong>DataHub ВУЗ-ов «РК»</strong><br>
+      <span class="small muted-note">Контакты: info@datahub.kz</span>
+    </div>
+    <div class="small muted-note">Политика конфиденциальности · Помощь</div>
+  </div>
+</footer>
+
+<!-- основной общий скрипт (если есть) -->
+<script src="assets/js/app.js" defer></script>
+
+<script>
+/*
+  Partners page logic:
+  - load partners via DataHub.fetchPartners() if available or via /api/partners
+  - allow create partner via form (multipart/form-data)
+*/
+
+document.addEventListener('DOMContentLoaded', () => {
+  const partnersArea = document.getElementById('partnersArea');
+  const form = document.getElementById('partnerForm');
+  const status = document.getElementById('partnerStatus');
+  const logoInput = document.getElementById('logoInput');
+  const logoPreview = document.getElementById('logoPreview');
+  const btnClear = document.getElementById('btnClear');
+
+  // helper escape
+  function esc(s){ return (s===null||s===undefined)?'':String(s); }
+  function showError(txt){ status.textContent = txt; status.style.color = '#ff9b9b'; }
+  function showOk(txt){ status.textContent = txt; status.style.color = ''; }
+
+  // Preview logo on selection
+  logoInput.addEventListener('change', (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) { logoPreview.style.display='none'; logoPreview.src=''; return; }
+    const url = URL.createObjectURL(f);
+    logoPreview.src = url;
+    logoPreview.style.display = 'block';
+  });
+
+  btnClear.addEventListener('click', () => {
+    form.reset();
+    logoPreview.style.display='none';
+    status.textContent='';
+  });
+
+  // Render partners grid
+  function renderPartners(list) {
+    partnersArea.innerHTML = '';
+    if (!list || !list.length) {
+      partnersArea.innerHTML = '<p class="muted-note">Партнёры не найдены.</p>';
+      return;
+    }
+    list.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'partner-card';
+      const logoHtml = p.logo_url ? `<img src="${p.logo_url}" alt="${esc(p.partner_name)}" style="width:74px;height:74px;object-fit:cover;border-radius:8px;">`
+                                  : `<div class="partner-logo">${esc((p.partner_name||'?')[0])}</div>`;
+      div.innerHTML = `
+        ${logoHtml}
+        <div class="partner-meta">
+          <h4>${esc(p.partner_name)}</h4>
+          <div class="muted-note small">${esc(p.country || '')}</div>
+          <div class="muted-note small" style="margin-top:6px;">${esc(p.programs || '')}</div>
+          <div style="margin-top:8px;">
+            ${p.website ? `<a href="${esc(p.website)}" target="_blank">Сайт</a> · ` : ''}
+            ${p.contact ? `<span class="muted-note">${esc(p.contact)}</span>` : ''}
+          </div>
+        </div>
+      `;
+      partnersArea.appendChild(div);
+    });
+  }
+
+  // Load partners from backend (try DataHub wrapper, fallback to fetch)
+  async function loadPartners() {
+    partnersArea.innerHTML = '<p class="muted-note">Загрузка партнёров...</p>';
+    try {
+      let list = [];
+      if (window.DataHub && typeof DataHub.fetchPartners === 'function') {
+        list = await DataHub.fetchPartners();
+      } else {
+        const resp = await fetch('/api/partners');
+        if (resp.ok) list = await resp.json();
+        else list = [];
+      }
+      renderPartners(list || []);
+    } catch (err) {
+      console.error(err);
+      partnersArea.innerHTML = '<p class="muted-note">Ошибка загрузки партнёров.</p>';
+    }
+  }
+
+  // Submit new partner (multipart/form-data)
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    status.textContent = 'Отправка...';
+    status.style.color = '';
+
+    const fd = new FormData(form);
+
+    try {
+      // try DataHub.createPartner if exists
+      if (window.DataHub && typeof DataHub.createPartner === 'function') {
+        // DataHub.createPartner should accept FormData or object — try FormData
+        const res = await DataHub.createPartner(fd);
+        showOk('Партнёр добавлен');
+        form.reset();
+        logoPreview.style.display='none';
+        loadPartners();
+        return;
+      }
+
+      // fallback: direct fetch to backend endpoint
+      const resp = await fetch('/api/partners', {
+        method: 'POST',
+        body: fd
+      });
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error('Ошибка: ' + resp.status + ' ' + text);
+      }
+      const created = await resp.json();
+      showOk('Партнёр успешно добавлен');
+      form.reset();
+      logoPreview.style.display='none';
+      loadPartners();
+    } catch (err) {
+      console.error(err);
+      showError('Не удалось добавить партнёра. ' + (err.message||''));
+    }
+  });
+
+  // initial load
+  loadPartners();
+});
+</script>
+
+</body>
+</html>

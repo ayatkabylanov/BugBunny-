@@ -1,0 +1,494 @@
+/* ===========================================================
+   Светлая голубая тема + светлая шапка (как на твоём референсе)
+   =========================================================== */
+
+:root {
+    --bg: #eaf3ff;
+    --surface: #ffffff;
+    --surface-light: #f3f8ff;
+    --text: #273449;
+    --muted: #6b8299;
+
+    --accent: #7fb2ff;
+    --accent-2: #5f9bff;
+    --accent-3: #2f76ff;
+
+    --radius: 14px;
+    --container-pad: 28px;
+    --max-width: 1280px;
+
+    --shadow: 0 8px 28px rgba(47,118,255,0.08);
+}
+
+/* ===========================================================
+   ГЛОБАЛЬНЫЕ СТИЛИ
+   =========================================================== */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Rubik", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ===========================================================
+   FIXED HEADER — СВЕТЛЫЙ! (исправлено)
+   =========================================================== */
+
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    /* ✔ Светлый фон */
+    background: linear-gradient(180deg, #f8fbff, #eef4ff) !important;
+
+    border-bottom: 1px solid rgba(180, 200, 230, 0.55);
+    backdrop-filter: blur(8px);
+
+    padding: 14px 0;
+    z-index: 9999;
+    box-shadow: 0 6px 20px rgba(20,40,80,0.06) !important;
+}
+
+/* контейнер */
+.header-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-pad);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* BRAND */
+.brand {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.brand-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+
+    background: linear-gradient(180deg, #e8f3ff, #dbe7ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 6px 18px rgba(20,40,80,0.06);
+}
+
+.brand-title {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.brand-sub {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* ===========================================================
+   НАВИГАЦИЯ — тоже светлая
+   =========================================================== */
+
+.main-nav {
+    display: flex;
+    gap: 16px;
+}
+
+.nav-link {
+    padding: 8px 12px;
+    border-radius: 10px;
+
+    color: #3a4b6b !important;
+    text-decoration: none;
+    font-weight: 500;
+
+    transition: 0.2s;
+}
+
+.nav-link:hover {
+    background: rgba(150,170,210,0.15);
+}
+
+.nav-link.active {
+    background: rgba(130,160,220,0.25);
+    color: #1f3d73 !important;
+    box-shadow: 0 6px 20px rgba(30,60,120,0.10);
+}
+
+/* ===========================================================
+   MOBILE NAV
+   =========================================================== */
+
+.burger {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+
+    background: rgba(200,210,230,0.3);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.burger div {
+    width: 22px;
+    height: 3px;
+    background: #3b4a67;
+    margin: 3px 0;
+    border-radius: 2px;
+}
+
+@media (max-width: 980px) {
+    .main-nav { display: none; }
+
+    .main-nav.mobile-open {
+        display: flex;
+        position: absolute;
+        top: 70px;
+        right: 20px;
+
+        background: white;
+        flex-direction: column;
+        gap: 10px;
+
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+    }
+
+    .burger { display: flex; }
+}
+
+/* ===========================================================
+   ОТСТУП ПОД ФИКСИРОВАННУЮ ШАПКУ
+   =========================================================== */
+
+body {
+    padding-top: 110px !important;
+}
+
+/* ===========================================================
+   ФОРМЫ И ИНПУТЫ
+   =========================================================== */
+
+input, select {
+    background: var(--surface-light);
+    border: 1px solid rgba(90,120,160,0.12);
+    padding: 10px 12px;
+    border-radius: 10px;
+    width: 100%;
+    color: var(--text);
+
+    margin-bottom: 12px;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+}
+
+/* кнопки */
+button, .btn {
+    background: linear-gradient(180deg, #7fb2ff, #5f9bff);
+    padding: 10px 16px;
+    border-radius: 10px;
+
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-weight: 600;
+
+    box-shadow: 0 10px 20px rgba(47,118,255,0.15);
+    transition: 0.2s;
+}
+
+button:hover, .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 26px rgba(47,118,255,0.22);
+}
+
+.btn.ghost {
+    background: rgba(140,160,200,0.12);
+    color: #3b4a67;
+}
+
+/* ===========================================================
+   HERO
+   =========================================================== */
+
+.hero-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+}
+
+.hero-left h1 {
+    font-size: 44px;
+    margin: 0 0 10px;
+    color: #2b3b52;
+}
+
+.hero-left .lead {
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+/* ===========================================================
+   ПАНЕЛИ (как на картинке)
+   =========================================================== */
+
+.hero-panels {
+    display: flex;
+    gap: 18px;
+    flex: 1 1 auto;
+}
+
+.panel {
+    flex: 1;
+    height: 280px;
+
+    border-radius: 50px 50px 14px 14px;
+    padding: 32px 26px;
+
+    color: white;
+    position: relative;
+    overflow: hidden;
+
+    box-shadow: 0 10px 32px rgba(47,118,255,0.12);
+}
+
+.panel-num {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.panel-1 { background: linear-gradient(180deg, var(--accent), #6ea9ff); }
+.panel-2 { background: linear-gradient(180deg, var(--accent-2), #4f8fff); }
+.panel-3 { background: linear-gradient(180deg, var(--accent-3), #2766e7); }
+
+.panel::before {
+    content: "";
+    position: absolute;
+    top: -120px;
+    left: -120px;
+
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.09);
+}
+
+.panel h3 {
+    margin: 6px 0 12px;
+    font-size: 22px;
+}
+
+.panel p {
+    font-size: 15px;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.9);
+}
+
+/* ===========================================================
+   КАРТОЧКИ НИЖЕ
+   =========================================================== */
+
+.card {
+    background: var(--surface);
+    padding: 22px;
+    border-radius: 16px;
+
+    border: 1px solid rgba(60,90,140,0.10);
+    box-shadow: var(--shadow);
+
+    margin-bottom: 20px;
+}
+
+/* ===========================================================
+   САЙДБАР
+   =========================================================== */
+
+.sidebar-card {
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 18px;
+
+    border: 1px solid rgba(120,150,190,0.15);
+    box-shadow: 0 10px 30px rgba(47,118,255,0.06);
+}
+
+#popularList li {
+    margin-bottom: 10px;
+}
+
+/* ===========================================================
+   FOOTER
+   =========================================================== */
+
+.site-footer {
+    margin-top: 50px;
+    padding: 28px 0;
+    color: var(--muted);
+}
+
+.footer-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-pad);
+
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ===========================================================
+   RESPONSIVE
+   =========================================================== */
+
+@media (max-width: 1100px) {
+    .hero-panels { flex-direction: column; }
+    .panel { height: auto; padding: 24px; }
+    body { padding-top: 120px !important; }
+}
+
+@media (max-width: 700px) {
+    .brand-title { font-size: 20px; }
+    .panel { border-radius: 26px; }
+}
+/* ========== ANIMATED BUTTONS ========== */
+/* Применяется к элементам button, .btn, a.btn и .btn.primary/ghost и т.д. */
+
+button, .btn, a.btn {
+  --btn-bg: linear-gradient(180deg, #7fb2ff, #5f9bff);
+  --btn-color: #fff;
+  --btn-radius: 12px;
+  --btn-shadow: 0 10px 22px rgba(47,118,255,0.14);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--btn-radius);
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 180ms cubic-bezier(.2,.9,.2,1),
+    box-shadow 220ms cubic-bezier(.2,.9,.2,1),
+    filter 160ms ease,
+    opacity 160ms ease;
+  box-shadow: var(--btn-shadow);
+  user-select: none;
+  position: relative;
+  overflow: hidden; /* для ripple */
+}
+
+/* hover — лёгкий подъём и усиление сияния */
+button:hover, .btn:hover, a.btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(47,118,255,0.18);
+  filter: saturate(1.03);
+}
+
+/* active — нажатие (вжать внутрь) */
+button:active, .btn:active, a.btn:active {
+  transform: translateY(-1px) scale(0.995);
+  box-shadow: 0 8px 18px rgba(20,60,120,0.12);
+  transition-duration: 120ms;
+}
+
+/* focus — доступность (outline) */
+button:focus, .btn:focus, a.btn:focus {
+  outline: none;
+  box-shadow:
+    0 10px 28px rgba(47,118,255,0.14),
+    0 0 0 6px rgba(95,155,255,0.12);
+}
+
+/* Ghost / secondary style — более мягкая кнопка */
+.btn.ghost, button.ghost {
+  --btn-bg: linear-gradient(180deg,#ffffff, #f3f7ff);
+  --btn-color: #193049;
+  box-shadow: 0 6px 18px rgba(10,30,60,0.06);
+  border: 1px solid rgba(20,50,90,0.04);
+}
+
+/* Small / pill */
+.btn.sm {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight:600;
+}
+
+/* Smooth color change for primary variant */
+.btn.primary {
+  --btn-bg: linear-gradient(180deg,#4f9dff,#1673ff);
+  --btn-color: #fff;
+}
+
+/* subtle floating animation for call-to-action buttons */
+@keyframes floatUp {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+.btn.cta {
+  animation: floatUp 5s ease-in-out infinite;
+  animation-delay: 0.6s;
+}
+
+/* Ripple effect pseudo-element (small fallback if JS not loaded) */
+button.ripple::after,
+.btn.ripple::after,
+a.btn.ripple::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: rgba(255,255,255,0.28);
+  transition: width 420ms ease, height 420ms ease, opacity 420ms ease;
+  opacity: 0;
+}
+
+/* make ripple visible when .ripple--animate added by JS */
+button.ripple.ripple--animate::after,
+.btn.ripple.ripple--animate::after,
+a.btn.ripple.ripple--animate::after {
+  width: 260px;
+  height: 260px;
+  opacity: 0;
+  transition: opacity 420ms ease;
+}
+
+/* ensure anchor look like button */
+a.btn { display:inline-flex; }
+
+/* tiny accessibility improvement: increase hit area on touch devices */
+@media (hover: none) {
+  button, .btn, a.btn { padding: 14px 18px; }
+}
