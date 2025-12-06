@@ -130,12 +130,12 @@
               <option value="">Все регионы</option>
               <option value="almaty">Алматы</option>
               <option value="nursultan">Нур-Султан</option>
+              <option value="astana">Астана</option>
+              <option value="shymkent">Шымкент</option>
             </select>
             <button type="submit" class="btn primary">Поиск</button>
             <button type="button" id="btnAdvanced" class="btn ghost">Расширенный поиск</button>
           </form>
-
-          
 
         </div>
 
@@ -204,6 +204,55 @@
   <!-- общий скрипт (внешний) -->
   <script src="assets/js/app.js" defer></script>
 
+  <!-- ========== ЛОКАЛЬНЫЙ DATAHUB FALLBACK + ИНТЕГРИРОВАННАЯ ЛОГИКА ========== -->
+  <script>
+  /**
+   * Если глобальный объект DataHub отсутствует (в разработке / без бэкенда),
+   * создаём локальный DataHub с простыми методами:
+   *  - fetchUniversities() -> загружает assets/data/universities.json
+   *  - fetchUniversityById(id) -> возвращает объект университета
+   *  - escapeHtml(s) -> безопасный вывод
+   */
+  (function(){
+    if (!window.DataHub) {
+      window.DataHub = {
+        async fetchUniversities(opts) {
+          // opts можно игнорировать — но поддержим { q, region } при необходимости
+          try {
+            const resp = await fetch('assets/data/universities.json');
+            if (!resp.ok) throw new Error('failed to load universities.json');
+            const j = await resp.json();
+            return j.universities || [];
+          } catch (e) {
+            console.warn('DataHub fallback: cannot load universities.json', e);
+            throw e;
+          }
+        },
+        async fetchUniversityById(id) {
+          try {
+            const resp = await fetch('assets/data/universities.json');
+            if (!resp.ok) throw new Error('failed to load universities.json');
+            const j = await resp.json();
+            const arr = j.universities || [];
+            return arr.find(u => String(u.id).toLowerCase() === String(id).toLowerCase()) || null;
+          } catch (e) {
+            console.warn('DataHub.fetchUniversityById fallback error', e);
+            return null;
+          }
+        },
+        escapeHtml(s) {
+          return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+      };
+    } else {
+      // если DataHub есть, но нет escapeHtml — добавим полезный метод
+      if (!DataHub.escapeHtml) {
+        DataHub.escapeHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      }
+    }
+  })();
+  </script>
+
   <!-- ЗАМЕНИТЕ СТАРЫЙ БЛОК ЛОКАЛЬНОЙ ЛОГИКИ НА ЭТОТ -->
   <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -228,26 +277,27 @@
     let page = 1;
     const PER_PAGE = 6;
 
-     // маппинг значений селекта регионов (внизу — к нормализованной форме, в которой хранятся города)
+    // маппинг значений селекта регионов (внизу — к нормализованной форме, в которой хранятся города)
     const regionMap = {
       "almaty": "алматы",
-      "almatyq": "алматы",
-      "almaty (алматы)": "алматы",
-      "almaty_city": "алматы",
       "nursultan": "астана",
       "nur-sultan": "астана",
       "astana": "астана",
-      "astana_city": "астана",
-      "shymkent": "шыМКент".toLowerCase(), // пример: можете расширить карту
+      "shymkent": "шымкент",
       "": ""
     };
+
     // --- Helpers: normalisation / acronym building ---
-    const norm = (s = '') => String(s).toLowerCase()
-      .normalize ? String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') : String(s).toLowerCase();
+    const norm = (s = '') => {
+      try {
+        return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      } catch (e) {
+        return String(s).toLowerCase();
+      }
+    };
 
     function buildAcronym(name) {
       if (!name) return '';
-      // берём первые буквы слов (латиница или кириллица)
       return name.split(/[\s\-\–_()]+/).map(w => w.trim()).filter(Boolean).map(w => w[0]?.toUpperCase()||'').join('');
     }
 
@@ -262,9 +312,7 @@
       if (Array.isArray(u.partners)) {
         parts.push(u.partners.map(p => p.partner_name || '').join(' '));
       }
-      // дополнительные алиасы: если в данных есть alias/aliases
       if (u.aliases) parts.push(Array.isArray(u.aliases) ? u.aliases.join(' ') : (''+u.aliases));
-      // компактные варианты без пробелов
       const joined = parts.join(' ');
       const flat = joined.replace(/\s+/g,'');
       const acronym = buildAcronym(u.name || '');
@@ -272,7 +320,7 @@
         raw: joined,
         norm: norm(joined),
         flat: norm(flat),
-        acronym: norm(acronym)
+        acronym: (acronym || '').toUpperCase()
       };
     }
 
@@ -344,26 +392,26 @@
 
       const results = allList.filter(item => {
         const idx = item._searchIdx; // ранее добавленный индекс
-        // region filter: если указан, должен присутствовать в поле city или region
         if (rnorm) {
-          const cityOk = idx.norm.includes(rnorm) || (item.city && norm(item.city).includes(rnorm));
+          const cityOk = (item.city && norm(item.city).includes(rnorm)) || (idx && idx.norm.includes(rnorm));
           if (!cityOk) return false;
         }
         if (!qnorm) return true; // только фильтр по региону
 
-        // три основных способа совпадения:
         // 1) полное включение нормализованной строки
-        if (idx.norm.includes(qnorm)) return true;
-        // 2) включение в "flat" (без пробелов) позволяет находить аббревиатуры/склеенные запросы
-        if (idx.flat.includes(qnorm.replace(/\s+/g,''))) return true;
-        // 3) акроним (инициалы) совпадают или содержат
-        if (idx.acronym && idx.acronym.includes(qnorm.toUpperCase())) return true;
-        // 4) частичная проверка токенов (начинается с)
-        const tokens = idx.norm.split(/\s+/);
-        for (let t of tokens) {
-          if (t.startsWith(qnorm)) return true;
+        if (idx && idx.norm.includes(qnorm)) return true;
+        // 2) flat (без пробелов)
+        if (idx && idx.flat.includes(qnorm.replace(/\s+/g,''))) return true;
+        // 3) acronym
+        if (idx && idx.acronym && idx.acronym.includes(qnorm.toUpperCase())) return true;
+        // 4) частичное совпадение по токенам
+        if (idx) {
+          const tokens = idx.norm.split(/\s+/);
+          for (let t of tokens) {
+            if (t.startsWith(qnorm)) return true;
+          }
         }
-        // 5) совпадение по id
+        // 5) id match
         if ((item.id || '').toLowerCase().includes(qnorm)) return true;
 
         return false;
@@ -375,9 +423,11 @@
     // загрузка initial + индексирование
     async function loadInitial() {
       try {
+        // сначала попробуем DataHub.fetchUniversities (внешний модуль), иначе fallback внутри DataHub уже настроен
         allList = await DataHub.fetchUniversities();
+        if (!Array.isArray(allList)) allList = [];
         // ensure each has id and name
-        allList = allList.map(u => Object.assign({ id: u.id || (u.name||'').toLowerCase().replace(/\s+/g,''), name: u.name || '—' }, u));
+        allList = allList.map(u => Object.assign({ id: (u.id || (u.name||'').toLowerCase().replace(/\s+/g,'')), name: u.name || '—' }, u));
         // build _searchIdx for each
         allList.forEach(u => { u._searchIdx = buildSearchIndex(u); });
         currentList = allList.slice();
@@ -392,29 +442,25 @@
     }
 
     // perform search triggered by UI; q empty => show all
-      // perform search triggered by UI; q empty => show all
-  function doLocalSearch() {
-    const q = (searchQ.value || '').trim();
-    let region = (filterRegion.value || '').trim();
+    function doLocalSearch() {
+      const q = (searchQ.value || '').trim();
+      let region = (filterRegion.value || '').trim();
 
-    // Нормализация: привести region к нижнему регистру и сопоставить с картой
-    const rkey = (region || '').toString().toLowerCase().replace(/\s+/g, '');
-    // если в map есть ключ — возьмём его value; иначе будем использовать нормализованный ввод
-    const mapped = regionMap[rkey];
-    if (mapped !== undefined) {
-      region = mapped; // уже в нормализованной кириллической форме (например "алматы" или "астана")
-    } else {
-      // если нет в мапе, попробуем привести ввод к кириллической норме через norm()
-      region = norm(region);
+      // Нормализация: привести region к нижнему регистру и сопоставить с картой
+      const rkey = (region || '').toString().toLowerCase().replace(/\s+/g, '');
+      const mapped = regionMap[rkey];
+      if (mapped !== undefined) {
+        region = mapped;
+      } else {
+        region = norm(region);
+      }
+
+      const results = filterUniversities(q, region);
+      currentList = results;
+      page = 1;
+      renderGrid(currentList);
+      renderPopular(results);
     }
-
-    const results = filterUniversities(q, region);
-    currentList = results;
-    page = 1;
-    renderGrid(currentList);
-    renderPopular(results);
-  }
-
 
     // events
     if (searchForm) {

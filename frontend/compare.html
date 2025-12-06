@@ -1,187 +1,230 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Сравнение вузов — DataHub ВУЗ-ов «РК»</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сравнение университетов — DataHub ВУЗ-ов «РК»</title>
 
-  <!-- общий стиль (тот же, что на других страницах) -->
-  <link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/styles.css">
 
-  <style>
-    /* Стили страницы сравнения */
-    .compare-container { display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; }
-    .left-panel { flex: 0 0 380px; min-width:260px; }
-    .right-panel { flex: 1 1 640px; min-width:300px; }
-
-    .univ-item { display:flex; gap:12px; align-items:center; padding:8px; border-radius:10px; background:rgba(255,255,255,0.01); margin-bottom:8px; }
-    .univ-item .meta { flex:1; }
-    .univ-item .meta h4 { margin:0 0 6px 0; font-size:15px; }
-    .univ-item .meta .muted { color:var(--muted); font-size:13px; }
-
-    .compare-table { width:100%; border-collapse: collapse; }
-    .compare-table th, .compare-table td { padding:12px; border-bottom: 1px dashed rgba(255,255,255,0.03); text-align:left; vertical-align:top; }
-    .compare-table th { background: rgba(255,255,255,0.02); font-weight:700; width:220px; }
-
-    .actions { display:flex; gap:10px; margin-bottom:12px; align-items:center; }
-    @media (max-width:980px){
-      .compare-container { flex-direction:column; }
-      .left-panel { order:2; }
-      .right-panel { order:1; }
+<style>
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 980px) {
+    .compare-grid {
+      grid-template-columns: 1fr;
     }
-  </style>
+  }
+
+  .uni-item {
+    padding: 10px;
+    margin-bottom: 6px;
+    background: var(--surface-light);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .uni-item:hover {
+    background: rgba(120, 170, 255, 0.15);
+  }
+  .uni-item.selected {
+    background: rgba(80, 140, 255, 0.35);
+    border: 1px solid rgba(80,150,255,0.55);
+  }
+
+  table.compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+  }
+  table.compare-table th,
+  table.compare-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  table.compare-table th {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .empty-note {
+    color: var(--muted);
+    margin-top: 20px;
+  }
+</style>
 </head>
 <body>
 
-<!-- ================== HEADER (единый) ================== -->
+<!-- HEADER -->
 <header class="site-header">
   <div class="header-inner">
-    <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
-      <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
-          <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"></rect>
-          <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div style="line-height:1;">
-        <div style="font-weight:700; color:var(--text); font-size:16px;">DataHub ВУЗ-ов «РК»</div>
-        <div style="font-size:12px; color:var(--muted);">Каталог университетов</div>
+    <a href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:10px;">
+      <svg width="44" height="44" viewBox="0 0 24 24">
+        <rect x="1" y="1" width="22" height="22" rx="5" fill="#0b1220"/>
+        <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div style="font-weight:700; color:var(--text);">DataHub ВУЗ-ов «РК»</div>
+        <div style="font-size:12px; color:var(--muted); margin-top:2px;">Каталог университетов</div>
       </div>
     </a>
 
     <nav class="main-nav">
-      <a class="nav-link" href="index.html">Главная</a>
-      <a class="nav-link" href="university.html">Об университете</a>
-      <a class="nav-link" href="programs.html">Академ. программы</a>
-      <a class="nav-link" href="admission.html">Приём</a>
-      <a class="nav-link" href="compare.html">Сравнение</a>
-      <a class="nav-link" href="partners.html">Партнёры</a>
-      <a class="nav-link" href="tour.html">3D-тур</a>
+      <a href="index.html" class="nav-link">Главная</a>
+      <a href="university.html" class="nav-link">Об университете</a>
+      <a href="programs.html" class="nav-link">Академ. программы</a>
+      <a href="admission.html" class="nav-link">Приём</a>
+      <a href="compare.html" class="nav-link active">Сравнение</a>
+      <a href="partners.html" class="nav-link">Партнёры</a>
+      <a href="tour.html" class="nav-link">3D-тур</a>
     </nav>
 
     <div style="display:flex; gap:10px; align-items:center;">
       <a href="admission.html" class="btn primary">Подать заявление</a>
-      <button class="burger" id="navBurger" aria-label="Меню" title="Меню" type="button">
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
+      <button class="burger" id="navBurger">
+        <div></div><div></div><div></div>
       </button>
     </div>
   </div>
 </header>
 
-<!-- header helpers (active link, burger, spacing) -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  // active link
-  const path = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.main-nav .nav-link').forEach(a => {
-    if (a.getAttribute('href') === path) a.classList.add('active');
-  });
-
-  // burger
-  const burger = document.getElementById('navBurger');
-  const nav = document.querySelector('.main-nav');
-  if (burger && nav) {
-    burger.addEventListener('click', () => nav.classList.toggle('mobile-open'));
-    document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 980 && nav.classList.contains('mobile-open')) {
-        if (!nav.contains(e.target) && !burger.contains(e.target)) nav.classList.remove('mobile-open');
-      }
-    });
-  }
-
-  // adjust body padding to header
-  const header = document.querySelector('.site-header');
-  function adjustPad(){ document.body.style.paddingTop = header.getBoundingClientRect().height + 'px'; }
-  adjustPad();
-  window.addEventListener('resize', adjustPad);
-});
-</script>
-
-<!-- ================== MAIN ================== -->
 <main class="main-content">
-  <h2>Сравнение университетов</h2>
-  <p class="muted-note">Выберите до 3 вузов в левой колонке и нажмите "Сравнить" — таблица справа покажет основные параметры.</p>
+  <h1>Сравнение университетов</h1>
+  <p class="lead">Выберите до 3 вузов слева и нажмите “Сравнить” — справа появится таблица сравнения.</p>
 
-  <div class="compare-container" style="margin-top:18px;">
-    <!-- LEFT: selector -->
-    <aside class="left-panel">
+  <section class="card" style="margin-top:14px;">
+    <div class="compare-grid">
+
+      <!-- LEFT SIDE -->
       <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong>Список ВУЗов</strong>
-          <button id="btnReset" class="btn ghost" title="Сбросить выбор">Сброс</button>
+        <h3>Список ВУЗов</h3>
+
+        <input id="searchInput" type="text" placeholder="Поиск по названию" />
+
+        <div id="uniList" style="margin-top:10px; max-height:380px; overflow-y:auto;">
+          Загрузка списка...
         </div>
 
-        <div style="margin-top:10px;" class="actions">
-          <input id="qInput" type="search" placeholder="Поиск по названию" style="flex:1;">
-          <button id="btnSearch" class="btn ghost">Найти</button>
-        </div>
-
-        <div id="univListArea" style="margin-top:12px; max-height:520px; overflow:auto;">
-          <p class="muted-note">Загрузка списка...</p>
-        </div>
-
-        <div style="margin-top:12px; display:flex; gap:8px; justify-content:space-between; align-items:center;">
-          <div class="small muted-note">Выбрано: <span id="selectedCount">0</span>/3</div>
-          <button id="btnCompare" class="btn primary" disabled>Сравнить</button>
+        <div style="margin-top:12px;">
+          <p id="selectedCount">Выбрано: 0/3</p>
+          <button id="btnCompare" class="btn primary">Сравнить</button>
         </div>
       </div>
-    </aside>
 
-    <!-- RIGHT: comparison result -->
-    <section class="right-panel">
+      <!-- RIGHT SIDE -->
       <div class="card">
         <h3>Таблица сравнения</h3>
-        <div id="compareArea">
-          <p class="muted-note">Выберите вузы слева и нажмите "Сравнить".</p>
+        <div id="compareTableBlock" class="empty-note">
+          Выберите университеты слева и нажмите "Сравнить".
         </div>
       </div>
-    </section>
-  </div>
+
+    </div>
+  </section>
 </main>
 
-<!-- ================== FOOTER ================== -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div>
-      <strong>DataHub ВУЗ-ов «РК»</strong><br>
-      <span class="small muted-note">Контакты: info@datahub.kz</span>
-    </div>
+    <div><strong>DataHub ВУЗ-ов «РК»</strong><br>
+      <span class="small muted-note">Контакты: info@datahub.kz</span></div>
     <div class="small muted-note">Политика конфиденциальности · Помощь</div>
   </div>
 </footer>
-
-<!-- подключаем общий скрипт (если есть) -->
+<script src="assets/js/universities.js" defer></script>
 <script src="assets/js/app.js" defer></script>
 
-<!-- локальная логика страницы сравнения -->
 <script>
-document.getElementById('btnCompare').addEventListener('click', async () => {
-  const checked = Array.from(document.querySelectorAll('input[name="compare"]:checked')).map(i => i.value);
-  if (checked.length < 2) { alert('Выберите минимум 2 университета'); return; }
+document.addEventListener("DOMContentLoaded", async () => {
 
-  const db = await fetch('assets/data/universities.json').then(r => r.json());
-  const results = checked.map(id => db.universities.find(u => u.id === id)).filter(Boolean);
+  let universities = [];
+  let selected = [];
 
-  // рисуем простую таблицу
-  let html = '<table class="card" style="width:100%; border-collapse:collapse;"><thead><tr><th style="text-align:left;padding:10px">Параметр</th>';
-  results.forEach(r => html += `<th style="padding:10px;text-align:left">${r.name}</th>`);
-  html += '</tr></thead><tbody>';
-  const rows = [
-    ['Город', r => r.city],
-    ['Рейтинг', r => r.rating],
-    ['Студенты', r => r.student_count],
-    ['Преподаватели', r => r.faculty_count],
-    ['Программ', r => r.programs_count]
-  ];
-  rows.forEach(([label, fn]) => {
-    html += `<tr><td style="padding:10px;border-top:1px solid #eee">${label}</td>`;
-    results.forEach(r => html += `<td style="padding:10px;border-top:1px solid #eee">${fn(r)}</td>`);
-    html += '</tr>';
-  });
-  html += '</tbody></table>';
-  document.getElementById('compareResult').innerHTML = html;
+  const uniList = document.getElementById("uniList");
+  const selectedCount = document.getElementById("selectedCount");
+  const searchInput = document.getElementById("searchInput");
+  const compareBlock = document.getElementById("compareTableBlock");
+
+  async function loadUniversities() {
+    try {
+      if (window.UNIVERSITIES_DB)
+        universities = window.UNIVERSITIES_DB.universities;
+      else {
+        const res = await fetch("assets/data/universities.json");
+        universities = (await res.json()).universities;
+      }
+    } catch (e) {
+      uniList.innerHTML = "<p class='muted-note'>Ошибка загрузки данных...</p>";
+      return;
+    }
+    renderList(universities);
+  }
+
+  function renderList(list) {
+    uniList.innerHTML = "";
+    list.forEach(u => {
+      const div = document.createElement("div");
+      div.className = "uni-item";
+      div.dataset.id = u.id;
+      div.innerHTML = `<strong>${u.name}</strong><br><span class="muted-note">${u.city}</span>`;
+
+      div.onclick = () => toggleSelect(u.id, div);
+
+      uniList.appendChild(div);
+    });
+  }
+
+  function toggleSelect(id, div) {
+    const idx = selected.indexOf(id);
+
+    if (idx >= 0) {
+      selected.splice(idx, 1);
+      div.classList.remove("selected");
+    } else if (selected.length < 3) {
+      selected.push(id);
+      div.classList.add("selected");
+    }
+
+    selectedCount.textContent = `Выбрано: ${selected.length}/3`;
+  }
+
+  document.getElementById("btnCompare").onclick = () => {
+    if (!selected.length) {
+      compareBlock.innerHTML = "<p class='muted-note'>Выберите хотя бы один ВУЗ.</p>";
+      return;
+    }
+
+    const items = universities.filter(u => selected.includes(u.id));
+    renderCompareTable(items);
+  };
+
+  function renderCompareTable(items) {
+    let html = `
+      <table class="compare-table">
+        <tr>
+          <th>Параметр</th>
+          ${items.map(u => `<th>${u.name}</th>`).join("")}
+        </tr>
+
+        <tr><td>Город</td>${items.map(u=>`<td>${u.city}</td>`).join("")}</tr>
+        <tr><td>Рейтинг</td>${items.map(u=>`<td>${u.rating}</td>`).join("")}</tr>
+        <tr><td>Студентов</td>${items.map(u=>`<td>${u.student_count}</td>`).join("")}</tr>
+        <tr><td>Преподавателей</td>${items.map(u=>`<td>${u.faculty_count}</td>`).join("")}</tr>
+        <tr><td>Кол-во программ</td>${items.map(u=>`<td>${u.programs_count}</td>`).join("")}</tr>
+      </table>
+    `;
+
+    compareBlock.innerHTML = html;
+  }
+
+  searchInput.oninput = () => {
+    const q = searchInput.value.toLowerCase();
+    const filtered = universities.filter(u => u.name.toLowerCase().includes(q));
+    renderList(filtered);
+  };
+
+  loadUniversities();
 });
 </script>
 

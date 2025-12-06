@@ -8,300 +8,368 @@
   <link rel="stylesheet" href="assets/css/styles.css">
 
   <style>
-    /* Небольшие локальные стили страницы партнёров */
-    .partners-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
+    :root{
+      --max-width:1280px;
+      --pad:24px;
+      --surface:#fff;
+      --muted:#6b7280;
+      --text:#12243a;
+      --accent-start:#2d8cff;
+      --accent-end:#4aa1ff;
+      --shadow: 0 10px 30px rgba(12,32,80,0.06);
+      --left-w: 380px;
     }
-    .partner-card {
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      padding:12px;
-      border-radius:12px;
-      background: rgba(255,255,255,0.02);
-    }
-    .partner-logo {
-      width:74px;
-      height:74px;
-      border-radius:8px;
-      background: rgba(255,255,255,0.03);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:700;
-      color:var(--accent);
-      font-size:20px;
-      flex-shrink:0;
-    }
-    .partner-meta h4 { margin:0 0 6px 0; }
-    .muted-note.small { font-size:13px; color:var(--muted); }
-    .upload-preview { max-width:120px; max-height:80px; object-fit:cover; border-radius:6px; display:block; margin-top:8px; }
-    @media (max-width:980px) {
-      .partners-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+    body { font-family: Inter, system-ui, Arial; margin:0; color:var(--text); background:#f1f7ff; }
+    .site-header { position:fixed; top:0; left:0; right:0; background:linear-gradient(180deg, rgba(2,6,23,0.03), rgba(2,6,23,0.02)); padding:10px 0; z-index:999; border-bottom:1px solid rgba(0,0,0,0.03); }
+    .header-inner { max-width:var(--max-width); margin:0 auto; padding:0 var(--pad); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .main-nav { display:flex; gap:14px; align-items:center; }
+    .nav-link { color:var(--muted); text-decoration:none; padding:8px 12px; border-radius:8px; }
+    .nav-link.active { background: rgba(34, 115, 255, 0.08); color:#164ea6; }
 
+    main { max-width:var(--max-width); margin: 110px auto 60px; padding:0 var(--pad); }
+    h1 { margin:0 0 8px 0; font-size:32px; }
+    .lead { color:var(--muted); margin:6px 0 18px; }
+
+    .grid { display:grid; grid-template-columns: var(--left-w) 1fr; gap:18px; align-items:start; }
+    @media (max-width:980px){ .grid{ grid-template-columns: 1fr; } }
+
+    .left-panel { background:var(--surface); border-radius:12px; padding:14px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:12px; }
+    .left-panel .uni-list { display:flex; flex-direction:column; gap:12px; overflow:auto; padding-right:6px; }
+    .uni-card { display:flex; gap:12px; align-items:center; padding:12px; border-radius:10px; background:#fff; border:1px solid rgba(12,32,80,0.03); box-shadow: 0 6px 18px rgba(12,32,80,0.03); min-height:74px; }
+    .uni-logo-sm { width:56px; height:56px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#071025; color:#6ee7b7; font-weight:700; font-size:18px; flex:0 0 56px; }
+    .uni-name { font-weight:700; color:var(--text); font-size:14px; line-height:1.15; }
+    .uni-meta { color:var(--muted); font-size:13px; margin-top:6px; }
+
+    .btn-choose { padding:8px 14px; border-radius:10px; border:none; cursor:pointer; background:linear-gradient(90deg,var(--accent-start),var(--accent-end)); color:#fff; box-shadow:0 8px 24px rgba(45,140,255,0.14); }
+
+    .left-controls { display:flex; gap:8px; align-items:center; }
+    .left-controls input { flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); background:#f3f7ff; color:var(--text); }
+    .left-controls button { padding:10px 12px; border-radius:10px; border:none; cursor:pointer; background:linear-gradient(90deg,var(--accent-start),var(--accent-end)); color:#fff; box-shadow:0 6px 18px rgba(45,140,255,0.12); }
+
+    .pagination { display:flex; gap:10px; align-items:center; justify-content:center; margin-top:8px; }
+    .pagination button { padding:8px 12px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:#fff; cursor:pointer; color:var(--text); }
+    .page-info { color:var(--muted); font-size:14px; min-width:60px; text-align:center; }
+
+    .right-panel { padding:18px; border-radius:12px; background:var(--surface); box-shadow:var(--shadow); min-height:220px; display:flex; flex-direction:column; gap:12px; }
+    .partner-list { display:flex; flex-direction:column; gap:12px; }
+    .partner-card { display:flex; gap:12px; align-items:flex-start; padding:12px; border-radius:10px; background:#fff; border:1px solid rgba(12,32,80,0.03); box-shadow: 0 6px 18px rgba(12,32,80,0.03); }
+    .partner-logo { width:56px; height:56px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:700; color:#334; background:#f4f6f8; flex:0 0 56px; }
+    .partner-meta h4 { margin:0 0 4px 0; font-size:15px; color:var(--text); }
+    .partner-meta .meta { font-size:13px; color:var(--muted); margin-bottom:6px; }
+    .partner-actions { margin-left:auto; display:flex; gap:8px; align-items:center; }
+    .badge { display:inline-block; padding:6px 8px; border-radius:8px; background:rgba(0,0,0,0.03); font-size:12px; color:var(--muted); }
+
+    .empty { color:var(--muted); padding:14px 0; }
+
+    footer.site-footer { margin-top:30px; padding:20px 0; background:transparent; }
+    .footer-inner { max-width:var(--max-width); margin:0 auto; padding:0 var(--pad); display:flex; justify-content:space-between; color:var(--muted); font-size:14px; }
+
+    /* плавный переход видимости (для кнопки свернуть) */
+    .left-controls button:focus { outline: none; box-shadow: 0 6px 18px rgba(45,140,255,0.18); }
+  </style>
 </head>
 <body>
 
-<!-- ========== HEADER (единый) ========== -->
-<header class="site-header">
+<header class="site-header" role="banner" aria-label="Верхнее меню">
   <div class="header-inner">
-    <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
-      <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
-          <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"></rect>
-          <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
+    <a href="index.html" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
+      <svg width="44" height="44" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="1" y="1" width="22" height="22" rx="5" fill="#0b1220"></rect>
+        <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
       <div style="line-height:1;">
-        <div style="font-weight:700; color:var(--text); font-size:16px;">DataHub ВУЗ-ов «РК»</div>
+        <div style="font-weight:700; color:var(--text);">DataHub ВУЗ-ов «РК»</div>
         <div style="font-size:12px; color:var(--muted);">Каталог университетов</div>
       </div>
     </a>
 
-    <nav class="main-nav">
+    <nav class="main-nav" aria-label="Главная навигация">
       <a class="nav-link" href="index.html">Главная</a>
       <a class="nav-link" href="university.html">Об университете</a>
       <a class="nav-link" href="programs.html">Академ. программы</a>
       <a class="nav-link" href="admission.html">Приём</a>
       <a class="nav-link" href="compare.html">Сравнение</a>
-      <a class="nav-link" href="partners.html">Партнёры</a>
+      <a class="nav-link active" href="partners.html">Партнёры</a>
       <a class="nav-link" href="tour.html">3D-тур</a>
     </nav>
 
     <div style="display:flex; gap:10px; align-items:center;">
       <a href="admission.html" class="btn primary">Подать заявление</a>
-      <button class="burger" id="navBurger" type="button" aria-label="Меню">
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
-      </button>
     </div>
   </div>
 </header>
 
-<script>
-/* header helpers: active link, burger, header spacing */
-document.addEventListener('DOMContentLoaded', () => {
-  const path = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.main-nav .nav-link').forEach(a => {
-    if (a.getAttribute('href') === path) a.classList.add('active');
-  });
+<main>
+  <h1>Партнёры университетов</h1>
+  <p class="lead">Выберите университет — ниже появится список его международных и локальных партнёров (обмен, двойные дипломы, исследования и индустриальные связи).</p>
 
-  const burger = document.getElementById('navBurger');
-  const nav = document.querySelector('.main-nav');
-  if (burger && nav) {
-    burger.addEventListener('click', () => nav.classList.toggle('mobile-open'));
-    document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 980 && nav.classList.contains('mobile-open')) {
-        if (!nav.contains(e.target) && !burger.contains(e.target)) nav.classList.remove('mobile-open');
-      }
-    });
-  }
+  <div class="grid" style="margin-top:16px;">
+    <aside class="left-panel">
+      <h3 style="margin:0 0 6px 0;">Университеты</h3>
 
-  const header = document.querySelector('.site-header');
-  function adjustPad(){ document.body.style.paddingTop = header.getBoundingClientRect().height + 'px'; }
-  adjustPad();
-  window.addEventListener('resize', adjustPad);
-});
-</script>
-
-<!-- ========== MAIN ========== -->
-<main class="main-content">
-  <div class="card">
-    <h2>Партнёры университетов</h2>
-    <p class="muted-note">Список международных и местных партнёров университетов: программы обмена, двойные дипломы и т.д.</p>
-  </div>
-
-  <div class="card" style="display:flex; gap:20px; flex-wrap:wrap;">
-    <!-- left: partner list -->
-    <div style="flex:1 1 520px; min-width:300px;">
-      <h3 style="margin-top:0;">Список партнёров</h3>
-
-      <div id="partnersArea" class="partners-grid" style="margin-top:12px;">
-        <p class="muted-note">Загрузка партнёров...</p>
+      <div class="left-controls">
+        <input id="leftSearch" placeholder="Найти вуз по названию" aria-label="Поиск вузов">
+        <button id="leftToggleList" title="Свернуть список">Свернуть список</button>
       </div>
-    </div>
 
-    <!-- right: add partner form -->
-    <aside style="width:360px; min-width:260px;">
-      <div class="card">
-        <h3>Добавить партнёра</h3>
-        <form id="partnerForm" enctype="multipart/form-data">
-          <label class="small">Название партнёра</label>
-          <input name="partner_name" type="text" placeholder="Partner University / Company" required>
+      <div id="uniListContainer" class="uni-list" aria-live="polite">
+        <!-- карточки вузов (пагинация) -->
+      </div>
 
-          <label class="small">Страна</label>
-          <input name="country" type="text" placeholder="Страна">
-
-          <label class="small">Связанные программы (JSON или CSV)</label>
-          <input name="programs" type="text" placeholder='["Exchange", "Dual Degree"]'>
-
-          <label class="small">Контакт (email или телефон)</label>
-          <input name="contact" type="text" placeholder="email@example.com">
-
-          <label class="small">Вебсайт</label>
-          <input name="website" type="url" placeholder="https://...">
-
-          <label class="small">Логотип (опционально)</label>
-          <input id="logoInput" name="logo" type="file" accept="image/*">
-
-          <img id="logoPreview" class="upload-preview" style="display:none;" alt="preview">
-
-          <div style="margin-top:12px; display:flex; gap:8px;">
-            <button type="submit" class="btn primary">Добавить партнёра</button>
-            <button type="button" id="btnClear" class="btn ghost">Очистить</button>
-          </div>
-
-          <p id="partnerStatus" class="muted-note small" style="margin-top:10px;"></p>
-        </form>
+      <div class="pagination" aria-hidden="false">
+        <button id="prevPage">← Назад</button>
+        <div class="page-info" id="pageInfo">0 / 0</div>
+        <button id="nextPage">Вперёд →</button>
       </div>
     </aside>
-  </div>
 
+    <section class="right-panel">
+      <h3 id="panelTitle">Все партнёры</h3>
+
+      <!-- Нормализованный блок поиска (замените старый блок им) -->
+    <div class="right-search" style="display:flex; gap:10px; align-items:center; margin-bottom:6px;">
+      <input id="partnerSearch" placeholder="Поиск по названию партнёра или стране"
+             style="flex:1; min-width:0; padding:10px 14px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); background:#f3f7ff; box-sizing:border-box;">
+      <button id="btnSearch" type="button"
+              style="padding:10px 14px; border-radius:10px; border:none; background:linear-gradient(90deg,var(--accent-start),var(--accent-end)); color:#fff; white-space:nowrap;">
+        Найти
+      </button>
+      <button id="btnShowAll" type="button"
+              style="padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); background:#fff;">
+        Показать всех
+      </button>
+    </div>
+
+
+      <div id="partnersArea" class="partner-list" style="margin-top:12px;">
+        <div class="empty">Сначала выберите университет слева — и список партнёров появится здесь.</div>
+      </div>
+    </section>
+  </div>
 </main>
 
-<!-- ========== FOOTER ========== -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div>
-      <strong>DataHub ВУЗ-ов «РК»</strong><br>
-      <span class="small muted-note">Контакты: info@datahub.kz</span>
-    </div>
-    <div class="small muted-note">Политика конфиденциальности · Помощь</div>
+    <div><strong>DataHub ВУЗ-ов «РК»</strong><br><span class="small muted-note">Контакты: <a href="mailto:info@datahub.kz">info@datahub.kz</a></span></div>
+    <div class="small-muted">Политика конфиденциальности · Помощь</div>
   </div>
 </footer>
 
-<!-- основной общий скрипт (если есть) -->
-<script src="assets/js/app.js" defer></script>
-
 <script>
-/*
-  Partners page logic:
-  - load partners via DataHub.fetchPartners() if available or via /api/partners
-  - allow create partner via form (multipart/form-data)
-*/
+/* Данные (минимум 3 партнёра на вуз) */
+const UNIVERSITIES = [
+  { id: "kznu", name: "КазНУ им. аль-Фараби", city: "Алматы",
+    partners: [
+      { name: "Universidad de Salamanca", country: "Spain", type: "Academic exchange", note: "Программы обмена в гуманитарных и естественных науках", contact: "international@kaznu.edu.kz", website: "https://www.usal.es/" },
+      { name: "Lomonosov Moscow State University", country: "Russia", type: "Research & exchange", note: "Совместные исследования и обмен студентами", contact: "", website: "http://www.msu.ru" },
+      { name: "University of Cambridge", country: "United Kingdom", type: "Research cooperation", note: "Научные проекты", contact: "", website: "https://www.cam.ac.uk/" }
+    ]
+  },
+  { id: "aues", name: "Алматинский университет энергетики и связи (АУЭС)", city: "Алматы",
+    partners: [
+      { name: "Anhalt University of Applied Sciences", country: "Germany", type: "Exchange", note: "Обмен для инженерных направлений", contact: "international@aues.kz", website: "https://www.hs-anhalt.de/" },
+      { name: "Tampere University", country: "Finland", type: "Research", note: "Энергетика, телеком", contact: "", website: "https://www.tuni.fi/" },
+      { name: "BUPT", country: "China", type: "Technical cooperation", note: "Телеком и ИКТ", contact: "", website: "http://www.bupt.edu.cn/" }
+    ]
+  },
+  { id: "kbtu", name: "Казахстанско-Британский технический университет (КБТУ)", city: "Алматы",
+    partners: [
+      { name: "London School of Economics (LSE)", country: "UK", type: "Academic cooperation", note: "Совместные курсы", contact: "international@kbtu.kz", website: "https://www.lse.ac.uk/" },
+      { name: "University of Strathclyde", country: "UK", type: "Engineering exchange", note: "Инженерные обмены", contact: "", website: "https://www.strath.ac.uk/" },
+      { name: "Heriot-Watt University", country: "UK", type: "Industry ties", note: "Практики и индустрия", contact: "", website: "https://www.hw.ac.uk/" }
+    ]
+  },
+  { id: "iitu", name: "МУИТ (IITU)", city: "Алматы",
+    partners: [
+      { name: "KAIST", country: "South Korea", type: "Research", note: "AI и ИТ", contact: "info@iitu.edu.kz", website: "https://www.kaist.ac.kr/" },
+      { name: "University of Oulu", country: "Finland", type: "Exchange", note: "ИТ обмены", contact: "", website: "https://www.oulu.fi/" },
+      { name: "NUS", country: "Singapore", type: "Research", note: "Совместные проекты", contact: "", website: "https://www.nus.edu.sg/" }
+    ]
+  },
+  { id: "aitu", name: "Astana IT University (АйТУ)", city: "Астана",
+    partners: [
+      { name: "SAP University Alliances", country: "Germany", type: "Industry", note: "SAP-программы", contact: "info@astanait.edu.kz", website: "https://www.sap.com/" },
+      { name: "Edinburgh Napier University", country: "UK", type: "Exchange", note: "Обмен студентами", contact: "", website: "https://www.napier.ac.uk/" },
+      { name: "Hasso Plattner Institute (HPI)", country: "Germany", type: "Design & IT", note: "Дизайн и инновации", contact: "", website: "https://hpi.de/" }
+    ]
+  }
+];
 
+/* UI */
 document.addEventListener('DOMContentLoaded', () => {
+  const uniListContainer = document.getElementById('uniListContainer');
+  const pageInfo = document.getElementById('pageInfo');
+  const prevPageBtn = document.getElementById('prevPage');
+  const nextPageBtn = document.getElementById('nextPage');
+  const leftSearch = document.getElementById('leftSearch');
+  const leftToggleList = document.getElementById('leftToggleList');
   const partnersArea = document.getElementById('partnersArea');
-  const form = document.getElementById('partnerForm');
-  const status = document.getElementById('partnerStatus');
-  const logoInput = document.getElementById('logoInput');
-  const logoPreview = document.getElementById('logoPreview');
-  const btnClear = document.getElementById('btnClear');
+  const panelTitle = document.getElementById('panelTitle');
+  const partnerSearch = document.getElementById('partnerSearch');
+  const btnSearch = document.getElementById('btnSearch');
+  const btnShowAll = document.getElementById('btnShowAll');
 
-  // helper escape
-  function esc(s){ return (s===null||s===undefined)?'':String(s); }
-  function showError(txt){ status.textContent = txt; status.style.color = '#ff9b9b'; }
-  function showOk(txt){ status.textContent = txt; status.style.color = ''; }
+  let perPage = 2;
+  const allUnis = UNIVERSITIES.slice();
+  let filteredUnis = allUnis.slice();
+  let page = 1;
+  const totalPages = () => Math.max(1, Math.ceil(filteredUnis.length / perPage));
 
-  // Preview logo on selection
-  logoInput.addEventListener('change', (e) => {
-    const f = e.target.files && e.target.files[0];
-    if (!f) { logoPreview.style.display='none'; logoPreview.src=''; return; }
-    const url = URL.createObjectURL(f);
-    logoPreview.src = url;
-    logoPreview.style.display = 'block';
-  });
+  function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escapeAttr(s){ return String(s||'').replace(/"/g,'&quot;'); }
 
-  btnClear.addEventListener('click', () => {
-    form.reset();
-    logoPreview.style.display='none';
-    status.textContent='';
-  });
+  function renderUniPage(){
+    uniListContainer.innerHTML = '';
+    const start = (page - 1) * perPage;
+    const pageItems = filteredUnis.slice(start, start + perPage);
+    pageItems.forEach(u => {
+      const div = document.createElement('div');
+      div.className = 'uni-card';
+      div.innerHTML = `
+        <div class="uni-logo-sm">${escapeHtml((u.name||'')[0] || 'U')}</div>
+        <div style="flex:1;">
+          <div class="uni-name">${escapeHtml(u.name)}</div>
+          <div class="uni-meta">${escapeHtml(u.city || '')}</div>
+        </div>
+        <div>
+          <button class="btn-choose" data-id="${escapeAttr(u.id)}">Выбрать</button>
+        </div>
+      `;
+      uniListContainer.appendChild(div);
+      div.querySelector('.btn-choose').addEventListener('click', () => selectUniversity(u.id));
+    });
 
-  // Render partners grid
-  function renderPartners(list) {
+    pageInfo.textContent = `${page} / ${totalPages()}`;
+    prevPageBtn.disabled = page <= 1;
+    nextPageBtn.disabled = page >= totalPages();
+  }
+
+  function selectUniversity(id){
+    const u = allUnis.find(x => x.id === id);
+    if(!u){
+      partnersArea.innerHTML = `<div class="empty">Нет данных по выбранному университету.</div>`;
+      panelTitle.textContent = 'Партнёры';
+      return;
+    }
+    panelTitle.textContent = `Партнёры — ${u.name}`;
+    renderPartners(u.partners);
+  }
+
+  function renderPartners(list){
     partnersArea.innerHTML = '';
-    if (!list || !list.length) {
-      partnersArea.innerHTML = '<p class="muted-note">Партнёры не найдены.</p>';
+    if(!Array.isArray(list) || !list.length){
+      partnersArea.innerHTML = `<div class="empty">Партнёры отсутствуют.</div>`;
       return;
     }
     list.forEach(p => {
-      const div = document.createElement('div');
-      div.className = 'partner-card';
-      const logoHtml = p.logo_url ? `<img src="${p.logo_url}" alt="${esc(p.partner_name)}" style="width:74px;height:74px;object-fit:cover;border-radius:8px;">`
-                                  : `<div class="partner-logo">${esc((p.partner_name||'?')[0])}</div>`;
-      div.innerHTML = `
-        ${logoHtml}
-        <div class="partner-meta">
-          <h4>${esc(p.partner_name)}</h4>
-          <div class="muted-note small">${esc(p.country || '')}</div>
-          <div class="muted-note small" style="margin-top:6px;">${esc(p.programs || '')}</div>
+      const card = document.createElement('div');
+      card.className = 'partner-card';
+      card.innerHTML = `
+        <div class="partner-logo">${escapeHtml((p.name||'')[0] || '?')}</div>
+        <div class="partner-meta" style="flex:1;">
+          <h4>${escapeHtml(p.name)}</h4>
+          <div class="meta">${escapeHtml(p.country)} · ${escapeHtml(p.type)}</div>
+          <div class="small-muted">${escapeHtml(p.note || '')}</div>
           <div style="margin-top:8px;">
-            ${p.website ? `<a href="${esc(p.website)}" target="_blank">Сайт</a> · ` : ''}
-            ${p.contact ? `<span class="muted-note">${esc(p.contact)}</span>` : ''}
+            ${p.website ? `<a href="${escapeAttr(p.website)}" target="_blank" rel="noopener">Сайт</a>` : ''}
+            ${p.contact ? ` · <a href="mailto:${escapeAttr(p.contact)}">${escapeHtml(p.contact)}</a>` : ''}
           </div>
         </div>
+        <div class="partner-actions">
+          <span class="badge">${escapeHtml(p.country)}</span>
+        </div>
       `;
-      partnersArea.appendChild(div);
+      partnersArea.appendChild(card);
     });
   }
 
-  // Load partners from backend (try DataHub wrapper, fallback to fetch)
-  async function loadPartners() {
-    partnersArea.innerHTML = '<p class="muted-note">Загрузка партнёров...</p>';
-    try {
-      let list = [];
-      if (window.DataHub && typeof DataHub.fetchPartners === 'function') {
-        list = await DataHub.fetchPartners();
-      } else {
-        const resp = await fetch('/api/partners');
-        if (resp.ok) list = await resp.json();
-        else list = [];
-      }
-      renderPartners(list || []);
-    } catch (err) {
-      console.error(err);
-      partnersArea.innerHTML = '<p class="muted-note">Ошибка загрузки партнёров.</p>';
-    }
+  function doLeftSearch(){
+    const q = (leftSearch.value || '').trim().toLowerCase();
+    if(!q) filteredUnis = allUnis.slice();
+    else filteredUnis = allUnis.filter(u => (u.name||'').toLowerCase().includes(q) || (u.city||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q));
+    page = 1; renderUniPage();
   }
 
-  // Submit new partner (multipart/form-data)
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    status.textContent = 'Отправка...';
-    status.style.color = '';
-
-    const fd = new FormData(form);
-
-    try {
-      // try DataHub.createPartner if exists
-      if (window.DataHub && typeof DataHub.createPartner === 'function') {
-        // DataHub.createPartner should accept FormData or object — try FormData
-        const res = await DataHub.createPartner(fd);
-        showOk('Партнёр добавлен');
-        form.reset();
-        logoPreview.style.display='none';
-        loadPartners();
-        return;
-      }
-
-      // fallback: direct fetch to backend endpoint
-      const resp = await fetch('/api/partners', {
-        method: 'POST',
-        body: fd
-      });
-      if (!resp.ok) {
-        const text = await resp.text();
-        throw new Error('Ошибка: ' + resp.status + ' ' + text);
-      }
-      const created = await resp.json();
-      showOk('Партнёр успешно добавлен');
-      form.reset();
-      logoPreview.style.display='none';
-      loadPartners();
-    } catch (err) {
-      console.error(err);
-      showError('Не удалось добавить партнёра. ' + (err.message||''));
+  function doPartnerSearch(){
+    const q = (partnerSearch.value || '').trim().toLowerCase();
+    if(!q) {
+      partnersArea.innerHTML = `<div class="empty">Введите запрос для поиска партнёров.</div>`;
+      return;
     }
-  });
+    const allPartners = [];
+    allUnis.forEach(u => (u.partners || []).forEach(p => allPartners.push(Object.assign({}, p, { uniName: u.name }))));
+    const filtered = allPartners.filter(p => (p.name||'').toLowerCase().includes(q) || (p.country||'').toLowerCase().includes(q) || (p.type||'').toLowerCase().includes(q) || (p.note||'').toLowerCase().includes(q));
+    if(!filtered.length){
+      partnersArea.innerHTML = `<div class="empty">По запросу «${escapeHtml(q)}» партнёров не найдено.</div>`;
+      panelTitle.textContent = `Результаты поиска`;
+      return;
+    }
+    panelTitle.textContent = `Результаты поиска (${filtered.length})`;
+    partnersArea.innerHTML = '';
+    filtered.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'partner-card';
+      card.innerHTML = `
+        <div class="partner-logo">${escapeHtml((p.name||'')[0] || '?')}</div>
+        <div class="partner-meta" style="flex:1;">
+          <h4>${escapeHtml(p.name)}</h4>
+          <div class="meta">${escapeHtml(p.country)} · ${escapeHtml(p.type)} · <span style="color:var(--muted);">${escapeHtml(p.uniName || '')}</span></div>
+          <div class="small-muted">${escapeHtml(p.note || '')}</div>
+          <div style="margin-top:8px;">
+            ${p.website ? `<a href="${escapeAttr(p.website)}" target="_blank" rel="noopener">Сайт</a>` : ''}
+            ${p.contact ? ` · <a href="mailto:${escapeAttr(p.contact)}">${escapeHtml(p.contact)}</a>` : ''}
+          </div>
+        </div>
+      `;
+      partnersArea.appendChild(card);
+    });
+  }
 
-  // initial load
-  loadPartners();
+  function showAllPartners(){
+    const allPartners = [];
+    allUnis.forEach(u => (u.partners || []).forEach(p => allPartners.push(Object.assign({}, p, { uniName: u.name }))));
+    panelTitle.textContent = `Все партнёры (${allPartners.length})`;
+    partnersArea.innerHTML = '';
+    allPartners.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'partner-card';
+      card.innerHTML = `
+        <div class="partner-logo">${escapeHtml((p.name||'')[0]||'?')}</div>
+        <div class="partner-meta" style="flex:1;">
+          <h4>${escapeHtml(p.name)}</h4>
+          <div class="meta">${escapeHtml(p.country)} · ${escapeHtml(p.type)} · <span style="color:var(--muted);">${escapeHtml(p.uniName)}</span></div>
+          <div class="small-muted">${escapeHtml(p.note || '')}</div>
+          <div style="margin-top:8px;">
+            ${p.website ? `<a href="${escapeAttr(p.website)}" target="_blank" rel="noopener">Сайт</a>` : ''}
+            ${p.contact ? ` · <a href="mailto:${escapeAttr(p.contact)}">${escapeHtml(p.contact)}</a>` : ''}
+          </div>
+        </div>
+      `;
+      partnersArea.appendChild(card);
+    });
+  }
+
+  prevPageBtn.addEventListener('click', ()=>{ if(page>1){ page--; renderUniPage(); uniListContainer.scrollTop=0; }});
+  nextPageBtn.addEventListener('click', ()=>{ if(page<totalPages()){ page++; renderUniPage(); uniListContainer.scrollTop=0; }});
+  leftSearch.addEventListener('input', ()=>{ page=1; doLeftSearch(); });
+  leftToggleList.addEventListener('click', ()=>{
+    if(uniListContainer.style.display === 'none'){ uniListContainer.style.display = ''; leftToggleList.textContent = 'Свернуть список'; }
+    else { uniListContainer.style.display = 'none'; leftToggleList.textContent = 'Развернуть список'; }
+  });
+  btnSearch.addEventListener('click', doPartnerSearch);
+  partnerSearch.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doPartnerSearch(); });
+  btnShowAll.addEventListener('click', showAllPartners);
+
+  // initial render
+  filteredUnis = allUnis.slice();
+  page = 1;
+  renderUniPage();
+
+  // preselect first university for convenience
+  setTimeout(()=> {
+    const first = filteredUnis[0];
+    if(first) selectUniversity(first.id);
+  }, 50);
 });
 </script>
 

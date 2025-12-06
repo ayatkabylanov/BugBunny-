@@ -3,374 +3,343 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>3D-тур / Панорамы — DataHub ВУЗ-ов «РК»</title>
+  <title>3D-тур — DataHub ВУЗ-ов «РК»</title>
 
   <link rel="stylesheet" href="assets/css/styles.css">
 
   <style>
-    /* Локальные стили страницы тура */
-    .tour-grid { display:grid; grid-template-columns: 1fr 360px; gap:18px; align-items:start; }
-    @media (max-width:980px) { .tour-grid { grid-template-columns: 1fr; } }
+    :root{
+      --max-width:1280px;
+      --container-pad:24px;
+      --text:#12243a;
+      --muted:#6b7280;
+      --surface:#fff;
+      --accent1:#2d8cff;
+      --accent2:#4aa1ff;
+      --card-shadow: 0 8px 30px rgba(12,32,80,0.06);
+    }
+    body{ font-family:Inter, system-ui, Arial; background:#f1f7ff; color:var(--text); margin:0; }
+    .site-header{ position:fixed; top:0; left:0; right:0; background:linear-gradient(180deg, rgba(2,6,23,0.03), rgba(2,6,23,0.02)); padding:10px 0; z-index:999; border-bottom:1px solid rgba(0,0,0,0.03); }
+    .header-inner{ max-width:var(--max-width); margin:0 auto; padding:0 var(--container-pad); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    main{ max-width:var(--max-width); margin:110px auto 60px; padding:0 var(--container-pad); }
+    h1{ margin:0 0 6px 0; font-size:32px; }
+    .lead{ color:var(--muted); margin-bottom:18px; }
 
-    .scene-list { max-height:520px; overflow:auto; padding:8px; display:flex; flex-direction:column; gap:10px; }
-    .scene-card { display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.02); padding:10px; border-radius:10px; }
-    .scene-thumb { width:120px; height:72px; object-fit:cover; border-radius:6px; background:rgba(255,255,255,0.03); }
-    .viewer-wrap { background:rgba(255,255,255,0.02); border-radius:12px; padding:12px; min-height:320px; display:flex; flex-direction:column; gap:10px; justify-content:center; align-items:center; }
+    .grid{ display:grid; grid-template-columns:360px 1fr; gap:18px; align-items:start; }
+    @media(max-width:980px){ .grid{ grid-template-columns: 1fr; } }
 
-    .upload-form input[type="text"], .upload-form input[type="number"] { width:100%; }
-    .muted-block { color:var(--muted); font-size:13px; }
+    .panel{ background:var(--surface); padding:16px; border-radius:12px; box-shadow:var(--card-shadow); }
+    .panel h3{ margin:0 0 12px 0; }
 
-    .btn-small { padding:6px 10px; font-size:13px; border-radius:8px; }
+    /* left list */
+    #searchInput{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); background:#f3f7ff; box-sizing:border-box; margin-bottom:12px; }
+    .uni-list{ display:flex; flex-direction:column; gap:12px; max-height:62vh; overflow:auto; padding-right:6px; }
+    .uni-item{ display:flex; gap:12px; align-items:center; padding:12px; border-radius:10px; background:#fff; border:1px solid rgba(0,0,0,0.03); cursor:pointer; }
+    .uni-item:hover{ box-shadow:0 8px 24px rgba(10,40,100,0.06); }
+    .uni-logo{ width:52px; height:52px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#071025; color:#6ee7b7; font-weight:700; font-size:18px; }
+    .uni-meta{ flex:1; min-width:0; }
+    .uni-meta .name{ font-weight:700; font-size:15px; line-height:1.1; }
+    .uni-meta .city{ font-size:13px; color:var(--muted); margin-top:4px; }
+
+    .btn-choose{ padding:8px 12px; border-radius:10px; border:none; background:linear-gradient(90deg,var(--accent1),var(--accent2)); color:#fff; cursor:pointer; }
+
+    /* right: player area */
+    .viewer { background:var(--surface); border-radius:12px; padding:14px; box-shadow:var(--card-shadow); min-height:360px; display:flex; flex-direction:column; gap:12px; }
+    .viewer-embed { width:100%; height:520px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); overflow:hidden; background:#000; display:flex; align-items:center; justify-content:center; }
+    .viewer-embed iframe{ width:100%; height:100%; border:0; display:block; }
+
+    .viewer-info { display:flex; gap:16px; align-items:flex-start; justify-content:space-between; }
+    .viewer-info .desc { color:var(--muted); max-width:70%; }
+    .viewer-actions{ display:flex; gap:8px; align-items:center; }
+
+    .muted-note{ color:var(--muted); }
+
+    /* small */
+    @media(max-width:700px){
+      .viewer-embed{ height:320px; }
+    }
   </style>
 </head>
 <body>
 
-<!-- ========== HEADER ========== -->
-<header class="site-header">
+<header class="site-header" role="banner">
   <div class="header-inner">
-    <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
-      <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
-          <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"></rect>
-          <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
+    <a href="index.html" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
+      <svg width="44" height="44" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="5" fill="#0b1220"/><path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6"/></svg>
       <div style="line-height:1;">
-        <div style="font-weight:700; color:var(--text); font-size:16px;">DataHub ВУЗ-ов «РК»</div>
+        <div style="font-weight:700; color:var(--text);">DataHub ВУЗ-ов «РК»</div>
         <div style="font-size:12px; color:var(--muted);">Каталог университетов</div>
       </div>
     </a>
-
     <nav class="main-nav">
       <a class="nav-link" href="index.html">Главная</a>
       <a class="nav-link" href="university.html">Об университете</a>
-      <a class="nav-link" href="programs.html">Программы</a>
+      <a class="nav-link" href="programs.html">Академ. программы</a>
       <a class="nav-link" href="admission.html">Приём</a>
       <a class="nav-link" href="compare.html">Сравнение</a>
       <a class="nav-link" href="partners.html">Партнёры</a>
-      <a class="nav-link" href="tour.html">3D-тур</a>
+      <a class="nav-link active" href="tour.html">3D-тур</a>
     </nav>
-
-    <div style="display:flex; gap:10px; align-items:center;">
-      <a href="admission.html" class="btn primary">Подать заявление</a>
-      <button class="burger" id="navBurger" type="button" aria-label="Меню">
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;border-radius:2px"></span>
-      </button>
-    </div>
+    <div><a href="admission.html" class="btn primary">Подать заявление</a></div>
   </div>
 </header>
 
-<script>
-/* header helpers (active link, burger, header spacing) */
-document.addEventListener('DOMContentLoaded', () => {
-  // active link highlight
-  const path = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.main-nav .nav-link').forEach(a => {
-    if (a.getAttribute('href') === path) a.classList.add('active');
-  });
+<main>
+  <h1>3D-туры университетов</h1>
+  <p class="lead">Исследуйте кампусы вузов в трёхмерном пространстве. Выберите университет слева — если для него есть 3D-тур, он загрузится справа.</p>
 
-  // burger toggle
-  const burger = document.getElementById('navBurger');
-  const nav = document.querySelector('.main-nav');
-  if (burger && nav) {
-    burger.addEventListener('click', () => nav.classList.toggle('mobile-open'));
-    document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 980 && nav.classList.contains('mobile-open')) {
-        if (!nav.contains(e.target) && !burger.contains(e.target)) nav.classList.remove('mobile-open');
-      }
-    });
-  }
+  <div class="grid">
+    <!-- LEFT: universities -->
+    <aside class="panel">
+      <h3>Университеты</h3>
+      <input id="searchInput" placeholder="Найти вуз по названию или городу" aria-label="Поиск университетов">
+      <div class="uni-list" id="uniList" role="list"></div>
+      <div style="margin-top:10px; color:var(--muted); font-size:13px;">Кликайте по вузу, чтобы открыть 3D-тур (если доступен).</div>
+    </aside>
 
-  // adjust body padding to header height
-  const header = document.querySelector('.site-header');
-  function adjustPad(){ document.body.style.paddingTop = header.getBoundingClientRect().height + 'px'; }
-  adjustPad();
-  window.addEventListener('resize', adjustPad);
-});
-</script>
-
-<!-- ========== MAIN ========== -->
-<main class="main-content">
-  <div class="card">
-    <h2>3D-тур / Панорамы</h2>
-    <p class="muted-note">Просматривайте панорамы кампуса и загружайте новые сцены (для админа). Рекомендуемый формат — equirectangular JPEG/PNG, крупный (например 8000×4000) для хорошего качества.</p>
-  </div>
-
-  <div class="tour-grid" style="margin-top:12px;">
-    <!-- LEFT: viewer and controls -->
-    <section>
-      <div class="viewer-wrap card" id="viewerWrap">
-        <div id="viewerArea" style="width:100%; height:360px; display:flex; align-items:center; justify-content:center;">
-          <!-- Если у вас есть pannellum или другой viewer — можно инициализировать его сюда.
-               Пока — показываем обычный <img> и кнопку "Открыть в новом окне". -->
-          <img id="currentPano" src="" alt="Панорама" style="max-width:100%; max-height:360px; object-fit:contain; border-radius:8px; display:none;">
-          <div id="noPano" class="muted-note">Панорама не выбрана</div>
+    <!-- RIGHT: viewer -->
+    <section class="viewer" aria-live="polite">
+      <div id="viewerHeader" style="display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <h3 id="viewerTitle" style="margin:0;">Выберите университет слева</h3>
+          <div id="viewerSub" class="muted-note" style="margin-top:6px;">3D-тур появится здесь</div>
         </div>
-
-        <div style="display:flex; gap:8px; margin-top:8px; align-items:center; justify-content:space-between; width:100%;">
-          <div>
-            <button id="btnPrevScene" class="btn btn-small ghost">← Предыдущая</button>
-            <button id="btnNextScene" class="btn btn-small ghost">Следующая →</button>
-          </div>
-          <div>
-            <a id="openPanoNew" class="btn btn-small" href="#" target="_blank" style="display:none;">Открыть в новом окне</a>
-          </div>
+        <div class="viewer-actions">
+          <button id="btnOpenNew" class="btn-choose" style="display:none">Открыть в новой вкладке</button>
         </div>
       </div>
 
-      <div class="card" style="margin-top:12px;">
-        <h4>Интерактивные точки (hotspots)</h4>
-        <p class="muted-note">Пока поддерживаются простые точки-описания. Для полноценного 3D-опыта подключите pannellum / PhotoSphereViewer.</p>
-        <div id="hotspotsList" class="muted-note small">Нет данных</div>
+      <div class="viewer-embed" id="viewerEmbed">
+        <div style="color:#fff; padding:10px; text-align:center;">
+          <div style="font-weight:700; font-size:18px;">3D-тур не выбран</div>
+          <div class="muted-note" style="color:#ddd; margin-top:8px;">Выберите университет слева, чтобы просмотреть виртуальный тур</div>
+        </div>
+      </div>
+
+      <div class="viewer-info" id="viewerInfo" style="display:none">
+        <div class="desc">
+          <div id="viewerDesc"></div>
+        </div>
+        <div style="min-width:200px; text-align:right;">
+          <div id="viewerContact" class="muted-note"></div>
+          <div style="margin-top:8px;"><a id="viewerLink" href="#" target="_blank" rel="noopener" style="display:none">Перейти на страницу тура</a></div>
+        </div>
       </div>
     </section>
-
-    <!-- RIGHT: scenes list + upload -->
-    <aside>
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong>Сцены тура</strong>
-          <button id="btnRefreshScenes" class="btn ghost btn-small">Обновить</button>
-        </div>
-
-        <div id="scenesList" class="scene-list" style="margin-top:10px;">
-          <p class="muted-note">Загрузка сцен...</p>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:12px;">
-        <h4>Добавить сцену (панораму)</h4>
-        <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
-          <label class="small">ID сцены</label>
-          <input name="scene_id" type="text" placeholder="entrance" required>
-
-          <label class="small">Заголовок</label>
-          <input name="title" type="text" placeholder="Главный вход">
-
-          <div style="display:flex; gap:8px;">
-            <div style="flex:1;">
-              <label class="small">Yaw</label>
-              <input name="yaw" type="number" step="0.1" placeholder="0">
-            </div>
-            <div style="flex:1;">
-              <label class="small">Pitch</label>
-              <input name="pitch" type="number" step="0.1" placeholder="0">
-            </div>
-          </div>
-
-          <label class="small">Hotspots (JSON)</label>
-          <input name="hotspots" type="text" placeholder='[{"x":10,"y":20,"text":"Аудитория 101"}]'>
-
-          <label class="small">Файл панорамы (jpeg/png)</label>
-          <input id="panoFile" name="image" type="file" accept="image/*" required>
-
-          <img id="panoPreview" style="display:none; margin-top:8px; width:100%; max-height:140px; object-fit:cover; border-radius:8px;" alt="preview">
-
-          <div style="display:flex; gap:8px; margin-top:10px;">
-            <button type="submit" class="btn primary">Загрузить сцену</button>
-            <button type="button" id="btnClearUpload" class="btn ghost">Очистить</button>
-          </div>
-
-          <p id="uploadStatus" class="muted-note small" style="margin-top:8px;"></p>
-        </form>
-      </div>
-    </aside>
   </div>
 </main>
 
-<!-- ========== FOOTER ========== -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div>
-      <strong>DataHub ВУЗ-ов «РК»</strong><br>
-      <span class="small muted-note">Контакты: info@datahub.kz</span>
-    </div>
-    <div class="small muted-note">Политика конфиденциальности · Помощь</div>
-  </div>
+<footer style="margin-top:28px; padding:24px 0; text-align:center; color:var(--muted);">
+  DataHub ВУЗ-ов «РК» · Контакты: info@datahub.kz
 </footer>
-
-<!-- общий скрипт (если есть) -->
-<script src="assets/js/app.js" defer></script>
 
 <script>
 /*
-  tour.html logic
-  - load tour for university id from query param ?univ_id=...
-  - GET /api/universities/{id}/tour  -> { title, scenes: [...] }
-  - POST /api/universities/{id}/tour (multipart) -> scene_id, title, pitch, yaw, hotspots, image file
+  tour.html
+  - использует window.UNIVERSITIES_DB, если он есть.
+  - если нет — использует встроенный demoList (те же вузы, что в проекте).
+  - выбираете вуз — справа появится iframe с 3D-туром (если есть), иначе превью и ссылка.
 */
 
-document.addEventListener('DOMContentLoaded', () => {
-  const scenesListEl = document.getElementById('scenesList');
-  const btnRefresh = document.getElementById('btnRefreshScenes');
-  const viewerImg = document.getElementById('currentPano');
-  const noPano = document.getElementById('noPano');
-  const openNewBtn = document.getElementById('openPanoNew');
-  const hotspotsList = document.getElementById('hotspotsList');
-  const prevBtn = document.getElementById('btnPrevScene');
-  const nextBtn = document.getElementById('btnNextScene');
+const demoList = [
+  {
+    id: "kznu",
+    name: "Казахский национальный университет им. аль-Фараби (КазНУ)",
+    city: "Алматы",
+    short_desc: "Крупнейший классический вуз Казахстана.",
+    tour: "https://3dtour.kaznu.kz"  // примерная ссылка
+  },
+  {
+    id: "aues",
+    name: "Алматинский университет энергетики и связи (АУЭС)",
+    city: "Алматы",
+    short_desc: "Ведущий вуз в области энергетики и связи.",
+    tour: "https://vr.aues.kz"
+  },
+  {
+    id: "kbtu",
+    name: "Казахстанско-Британский технический университет (КБТУ)",
+    city: "Алматы",
+    short_desc: "Технический вуз с англоязычными программами.",
+    tour: "" // нет тура
+  },
+  {
+    id: "iitu",
+    name: "Международный университет информационных технологий (МУИТ / IITU)",
+    city: "Алматы",
+    short_desc: "Сильная IT-специализация.",
+    tour: "https://tour.iitu.kz"
+  },
+  {
+    id: "aitu",
+    name: "Astana IT University (АйТУ)",
+    city: "Нур-Султан",
+    short_desc: "Современный ИТ-вуз в столице.",
+    tour: "https://tour.astanait.edu.kz"
+  }
+];
 
-  const uploadForm = document.getElementById('uploadForm');
-  const panoFile = document.getElementById('panoFile');
-  const panoPreview = document.getElementById('panoPreview');
-  const uploadStatus = document.getElementById('uploadStatus');
-  const btnClearUpload = document.getElementById('btnClearUpload');
-
-  // read university id from URL (or use sample)
-  const univId = new URLSearchParams(location.search).get('univ_id') || '';
-
-  let scenes = []; // array of scene objects
-  let currentIndex = -1;
-
-  // helper: escape
-  function escapeHtml(s){ if (!s) return ''; return String(s).replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]); }
-
-  // load tour
-  async function loadTour() {
-    scenesListEl.innerHTML = '<p class="muted-note">Загрузка сцен...</p>';
-    try {
-      let tour;
-      if (window.DataHub && typeof DataHub.fetchTour === 'function') {
-        tour = await DataHub.fetchTour(univId);
-      } else {
-        const url = univId ? `/api/universities/${encodeURIComponent(univId)}/tour` : `/api/universities/${encodeURIComponent('')}/tour`;
-        const resp = await fetch(`/api/universities/${encodeURIComponent(univId)}/tour`);
-        if (!resp.ok) throw new Error('Tour not found');
-        tour = await resp.json();
+// Fetch universities from global sources if available
+async function loadUniversities() {
+  try {
+    // if DataHub object available and has fetchUniversities
+    if (window.DataHub && typeof DataHub.fetchUniversities === 'function') {
+      const items = await DataHub.fetchUniversities();
+      if (Array.isArray(items) && items.length) {
+        // map into expected shape
+        return items.map(u => ({
+          id: u.id || u.slug || (u.name || '').toLowerCase().replace(/\s+/g,'_'),
+          name: u.name || u.title || '—',
+          city: u.city || u.location || '',
+          short_desc: u.short_desc || u.description || '',
+          tour: (u.tour || (u.virtual_tour || '') ) || ''
+        }));
       }
-      scenes = Array.isArray(tour.scenes) ? tour.scenes : [];
-      renderScenes();
-      if (scenes.length) {
-        currentIndex = 0;
-        showScene(currentIndex);
-      } else {
-        currentIndex = -1;
-        showNoPano();
-      }
-    } catch (err) {
-      console.error(err);
-      scenesListEl.innerHTML = '<p class="muted-note">Тур не найден или ошибка сервера.</p>';
-      showNoPano();
     }
+
+    // if window.UNIVERSITIES_DB present
+    if (window.UNIVERSITIES_DB && Array.isArray(window.UNIVERSITIES_DB.universities)) {
+      return window.UNIVERSITIES_DB.universities.map(u => ({
+        id: u.id || u.name.toLowerCase().replace(/\s+/g,'_'),
+        name: u.name || '—',
+        city: u.city || '',
+        short_desc: u.short_desc || u.long_desc || '',
+        tour: u.tour || ''
+      }));
+    }
+
+  } catch (e) {
+    console.warn("loadUniversities error:", e);
   }
 
-  function renderScenes() {
-    scenesListEl.innerHTML = '';
-    if (!scenes.length) {
-      scenesListEl.innerHTML = '<p class="muted-note">Сцены отсутствуют.</p>';
+  // fallback: demo list
+  return demoList;
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const uniListEl = document.getElementById('uniList');
+  const searchInput = document.getElementById('searchInput');
+  const viewerEmbed = document.getElementById('viewerEmbed');
+  const viewerTitle = document.getElementById('viewerTitle');
+  const viewerSub = document.getElementById('viewerSub');
+  const viewerInfo = document.getElementById('viewerInfo');
+  const viewerDesc = document.getElementById('viewerDesc');
+  const viewerContact = document.getElementById('viewerContact');
+  const viewerLink = document.getElementById('viewerLink');
+  const btnOpenNew = document.getElementById('btnOpenNew');
+
+  let universities = await loadUniversities();
+  // simple unique by id
+  const byId = {};
+  universities.forEach(u => byId[String(u.id)] = u);
+
+  function renderList(list) {
+    uniListEl.innerHTML = '';
+    if (!list.length) {
+      uniListEl.innerHTML = '<div class="muted-note">Университеты не найдены.</div>';
       return;
     }
-    scenes.forEach((s, i) => {
-      const div = document.createElement('div');
-      div.className = 'scene-card';
-      const img = document.createElement('img');
-      img.className = 'scene-thumb';
-      img.src = s.img_url || '';
-      img.alt = s.title || s.scene_id || 'панорама';
-      const meta = document.createElement('div');
-      meta.style.flex = '1';
-      meta.innerHTML = `<div style="font-weight:700;">${escapeHtml(s.title || s.scene_id)}</div><div class="muted-note small">${escapeHtml(s.scene_id)}</div>`;
-      const btnView = document.createElement('button');
-      btnView.className = 'btn btn-small ghost';
-      btnView.textContent = 'Открыть';
-      btnView.addEventListener('click', () => { showScene(i); currentIndex = i; });
-      div.appendChild(img);
-      div.appendChild(meta);
-      div.appendChild(btnView);
-      scenesListEl.appendChild(div);
+    list.forEach(u => {
+      const item = document.createElement('div');
+      item.className = 'uni-item';
+      item.innerHTML = `
+        <div class="uni-logo">${escapeHtml((u.name||'U')[0].toUpperCase())}</div>
+        <div class="uni-meta">
+          <div class="name">${escapeHtml(u.name)}</div>
+          <div class="city">${escapeHtml(u.city || '')}</div>
+        </div>
+        <div><button class="btn-choose" data-id="${escapeHtml(u.id)}">Тур</button></div>
+      `;
+      uniListEl.appendChild(item);
+    });
+
+    // attach click handlers
+    uniListEl.querySelectorAll('.btn-choose').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        selectUniversity(id);
+      });
+    });
+
+    // also allow clicking whole item
+    uniListEl.querySelectorAll('.uni-item').forEach(div => {
+      div.addEventListener('click', (ev) => {
+        // avoid double on button click
+        if (ev.target.tagName.toLowerCase() === 'button' || ev.target.closest('button')) return;
+        const btn = div.querySelector('.btn-choose');
+        if (btn) btn.click();
+      });
     });
   }
 
-  function showNoPano() {
-    viewerImg.style.display = 'none';
-    noPano.style.display = 'block';
-    openNewBtn.style.display = 'none';
-    hotspotsList.textContent = 'Нет данных';
-  }
+  function selectUniversity(id) {
+    const u = byId[id];
+    if (!u) return;
+    viewerTitle.textContent = u.name;
+    viewerSub.textContent = u.city ? (u.city) : '';
+    viewerDesc.textContent = u.short_desc || '';
 
-  function showScene(index) {
-    if (!scenes.length || index < 0 || index >= scenes.length) { showNoPano(); return; }
-    const s = scenes[index];
-    if (s.img_url) {
-      viewerImg.src = s.img_url;
-      viewerImg.style.display = 'block';
-      noPano.style.display = 'none';
-      openNewBtn.href = s.img_url;
-      openNewBtn.style.display = 'inline-block';
+    // show contact / link area
+    viewerInfo.style.display = 'flex';
+    viewerContact.innerHTML = `ID: ${escapeHtml(u.id)}`;
+    viewerLink.style.display = 'none';
+    btnOpenNew.style.display = 'none';
+
+    // if tour is a valid URL — embed in iframe
+    const tour = (u.tour || '').trim();
+    if (tour && isLikelyUrl(tour)) {
+      // show iframe
+      viewerEmbed.innerHTML = '';
+      const iframe = document.createElement('iframe');
+      // set sandbox only if you want restrict; for 3rd party better not set heavy restrictions
+      iframe.src = tour;
+      iframe.title = `3D-тур — ${u.name}`;
+      viewerEmbed.appendChild(iframe);
+
+      viewerLink.href = tour;
+      viewerLink.textContent = 'Открыть тур в новой вкладке';
+      viewerLink.style.display = 'inline-block';
+      btnOpenNew.style.display = 'inline-block';
+      btnOpenNew.onclick = ()=> window.open(tour, '_blank');
+
     } else {
-      showNoPano();
+      // no tour — show placeholder and informative text + image if any
+      viewerEmbed.innerHTML = `
+        <div style="padding:18px; text-align:left; color:var(--muted);">
+          <div style="font-weight:700; font-size:18px; color:var(--text); margin-bottom:6px;">3D-тур не найден</div>
+          <div>Для этого университета 3D-тур пока недоступен. Вы можете посетить официальный сайт вуза или связаться с приёмной комиссией для получения информации о виртуальных экскурсиях.</div>
+        </div>
+      `;
+      viewerLink.style.display = 'none';
+      btnOpenNew.style.display = 'none';
     }
 
-    // hotspots
-    try {
-      const hs = Array.isArray(s.hotspots) ? s.hotspots : (typeof s.hotspots === 'string' ? JSON.parse(s.hotspots || '[]') : []);
-      if (hs.length) {
-        hotspotsList.innerHTML = hs.map(h => `<div class="muted-block">• ${escapeHtml(h.text || h.title || JSON.stringify(h))}</div>`).join('');
-      } else {
-        hotspotsList.textContent = 'Нет hotspots для этой сцены';
-      }
-    } catch (err) {
-      hotspotsList.textContent = 'Ошибка разбора hotspots';
-    }
+    // scroll viewer into view a bit
+    viewerEmbed.scrollIntoView({behavior:'smooth', block:'center'});
   }
 
-  prevBtn.addEventListener('click', () => {
-    if (!scenes.length) return;
-    currentIndex = (currentIndex - 1 + scenes.length) % scenes.length;
-    showScene(currentIndex);
-  });
-  nextBtn.addEventListener('click', () => {
-    if (!scenes.length) return;
-    currentIndex = (currentIndex + 1) % scenes.length;
-    showScene(currentIndex);
-  });
-
-  btnRefresh.addEventListener('click', loadTour);
-
-  // upload preview
-  panoFile.addEventListener('change', (e) => {
-    const f = e.target.files && e.target.files[0];
-    if (!f) { panoPreview.style.display = 'none'; panoPreview.src = ''; return; }
-    panoPreview.src = URL.createObjectURL(f);
-    panoPreview.style.display = 'block';
-  });
-
-  btnClearUpload.addEventListener('click', () => {
-    uploadForm.reset();
-    panoPreview.style.display = 'none';
-    uploadStatus.textContent = '';
-  });
-
-  // upload handler
-  uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    uploadStatus.textContent = 'Загрузка...';
-    const fd = new FormData(uploadForm);
-
-    try {
-      // POST to /api/universities/{id}/tour
-      const target = `/api/universities/${encodeURIComponent(univId)}/tour`;
-      const resp = await fetch(target, { method: 'POST', body: fd });
-      if (!resp.ok) {
-        const txt = await resp.text();
-        throw new Error('Ошибка: ' + resp.status + ' ' + txt);
-      }
-      const resjson = await resp.json();
-      uploadStatus.textContent = 'Сцена добавлена';
-      uploadForm.reset();
-      panoPreview.style.display = 'none';
-      // reload scenes
-      await loadTour();
-    } catch (err) {
-      console.error(err);
-      uploadStatus.textContent = 'Ошибка загрузки: ' + (err.message || '');
+  // search handler (live)
+  searchInput.addEventListener('input', () => {
+    const q = (searchInput.value || '').trim().toLowerCase();
+    if (!q) {
+      renderList(universities);
+      return;
     }
+    const filtered = universities.filter(u => (u.name||'').toLowerCase().includes(q) || (u.city||'').toLowerCase().includes(q));
+    renderList(filtered);
   });
 
-  // initial
-  loadTour();
+  // fallback render
+  renderList(universities);
+
+  // Helpers
+  function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function isLikelyUrl(s){
+    try {
+      const url = new URL(s);
+      return ['http:','https:'].includes(url.protocol);
+    } catch(e){ return false; }
+  }
 });
 </script>
 

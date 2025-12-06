@@ -23,11 +23,17 @@
   .section-title { margin-top:24px; }
   .partners-list div { padding:6px 0; border-bottom:1px dashed rgba(0,0,0,0.06); }
 
+  .muted-note { color: var(--muted); }
+  .card { background: var(--surface); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); margin-bottom: 12px; }
+
   /* small responsive */
   @media (max-width:700px){
     .uni-header { flex-direction:column; align-items:flex-start; }
     .uni-logo { width:84px; height:84px; font-size:32px; }
   }
+
+  a.btn { display:inline-block; padding:8px 12px; border-radius:8px; text-decoration:none; border:1px solid rgba(0,0,0,0.06); background:transparent; color:var(--text); }
+  a.btn.ghost { background: rgba(255,255,255,0.02); }
 </style>
 
 </head>
@@ -41,7 +47,7 @@
 
     <a href="index.html" class="brand" style="display:flex; gap:12px; align-items:center; text-decoration:none;">
       <div style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <rect x="1" y="1" width="22" height="22" rx="5" fill="#071025"/>
           <path d="M4 12h16M12 4v16" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
@@ -52,9 +58,9 @@
       </div>
     </a>
 
-    <nav class="main-nav">
+    <nav class="main-nav" aria-label="Главная навигация">
       <a class="nav-link" href="index.html">Главная</a>
-      <a class="nav-link" href="university.html">Об университете</a>
+      <a class="nav-link active" href="university.html">Об университете</a>
       <a class="nav-link" href="programs.html">Программы</a>
       <a class="nav-link" href="admission.html">Приём</a>
       <a class="nav-link" href="compare.html">Сравнение</a>
@@ -64,7 +70,7 @@
 
     <div style="display:flex; gap:10px; align-items:center;">
       <a href="admission.html" class="btn primary">Подать заявление</a>
-      <button class="burger" id="navBurger" type="button">
+      <button class="burger" id="navBurger" type="button" aria-label="Открыть меню">
         <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;"></span>
         <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;"></span>
         <span style="display:block;width:20px;height:2px;background:var(--text);margin:4px 0;"></span>
@@ -84,19 +90,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const b = document.getElementById('navBurger');
   const nav = document.querySelector('.main-nav');
-  b.addEventListener('click', ()=> nav.classList.toggle('mobile-open'));
-  document.addEventListener('click',(e)=>{
-    if(window.innerWidth<=980 && nav.classList.contains('mobile-open')){
-      if(!nav.contains(e.target)&&!b.contains(e.target)) nav.classList.remove('mobile-open');
-    }
-  });
+  if (b) {
+    b.addEventListener('click', ()=> nav.classList.toggle('mobile-open'));
+    document.addEventListener('click',(e)=>{
+      if(window.innerWidth<=980 && nav.classList.contains('mobile-open')){
+        if(!nav.contains(e.target)&&!b.contains(e.target)) nav.classList.remove('mobile-open');
+      }
+    });
+  }
 
   const h = document.querySelector('.site-header');
   const setPad = ()=> document.body.style.paddingTop = h.getBoundingClientRect().height + 'px';
   setPad(); window.addEventListener('resize', setPad);
 });
 </script>
-
 
 <!-- ===========================================================
      MAIN CONTENT
@@ -140,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </main>
 
-
 <!-- ===========================================================
      FOOTER
 =========================================================== -->
@@ -153,88 +159,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script src="assets/js/app.js" defer></script>
 
+<!-- Embedded fallback DB (used if DataHub and fetch JSON are not available locally).
+     Keep IDs lowercase and consistent with `index.html` / other pages. -->
 <script>
-/* Встроенная локальная база университетов — используется, если fetch недоступен */
-window.UNIVERSITIES_DB = {
-  "universities": [
-    {
-      "id": "kaznu",
-      "name": "Казахский национальный университет имени аль-Фараби (КазНУ)",
-      "city": "Алматы",
-      "rating": 5,
-      "short_desc": "Крупнейший классический вуз Казахстана с широкой научной и международной деятельностью.",
-      "long_desc": "КазНУ основан в 1934 году и предлагает обучение на 16 факультетах.",
-      "student_count": 20000,
-      "faculty_count": 2000,
-      "programs_count": 180,
-      "contact": {
-        "phone": "+7 (727) 377-33-33",
-        "email": "info@kaznu.edu.kz",
-        "address": "пр. Аль-Фараби, 71, Алматы"
-      },
-      "gallery": ["assets/images/kaznu-1.jpg"],
-      "partners": [{"partner_name":"University of Cambridge","country":"UK"},{"partner_name":"Moscow State University","country":"Russia"}],
-      "tour": "https://3dtour.kaznu.kz"
-    },
-    {
-      "id": "aues",
-      "name": "Алматинский университет энергетики и связи (АУЭС)",
-      "city": "Алматы",
-      "rating": 4.7,
-      "short_desc": "Ведущий вуз в области энергетики, связи и ИТ.",
-      "long_desc": "АУЭС образован на базе Алматинского энергетического института.",
-      "student_count": 8000,
-      "faculty_count": 700,
-      "programs_count": 60,
-      "contact": {"phone":"+7 (727) 323-11-75","email":"aues@aues.kz","address":"ул. Байтурсынова, 126/1, Алматы"},
-      "gallery": ["assets/images/aues-1.jpg"],
-      "partners":[{"partner_name":"Anhalt University","country":"Germany"}],
-      "tour":"https://vr.aues.kz"
-    },
-    {
-      "id":"kbtu",
-      "name":"Казахстанско-Британский технический университет (КБТУ)",
-      "city":"Алматы","rating":4.9,
-      "short_desc":"Элитный технический вуз с англоязычными программами.",
-      "long_desc":"КБТУ специализируется на инженерных и ИТ-программах.",
-      "student_count":5000,"faculty_count":400,"programs_count":50,
-      "contact":{"phone":"+7 (727) 357-42-42","email":"info@kbtu.kz","address":"ул. Толе Би, 59, Алматы"},
-      "gallery":["assets/images/kbtu-1.jpg"],
-      "partners":[{"partner_name":"London School of Economics","country":"UK"}],
-      "tour":""
-    },
-    {
-      "id":"iitu",
-      "name":"Международный университет информационных технологий (МУИТ)",
-      "city":"Алматы","rating":4.8,
-      "short_desc":"Университет с сильной специализацией в ИТ.",
-      "long_desc":"МУИТ предлагает программы в программной инженерии и кибербезопасности.",
-      "student_count":6000,"faculty_count":500,"programs_count":40,
-      "contact":{"phone":"+7 (727) 320-00-00","email":"reception@iitu.edu.kz","address":"ул. Манаса, 34/1, Алматы"},
-      "gallery":["assets/images/iitu-1.jpg"],
-      "partners":[{"partner_name":"KAIST","country":"South Korea"},{"partner_name":"Microsoft","country":"USA"}],
-      "tour":"https://tour.iitu.kz"
-    },
-    {
-      "id":"aitu",
-      "name":"Astana IT University (АйТУ)",
-      "city":"Астана","rating":4.6,
-      "short_desc":"Современный ИТ-вуз нового поколения.",
-      "long_desc":"Astana IT University — технологический университет в столице Казахстана.",
-      "student_count":3000,"faculty_count":250,"programs_count":30,
-      "contact":{"phone":"+7 (7172) 645-710","email":"info@astanait.edu.kz","address":"пр. Мәңгілік Ел, блок C1, Астана"},
-      "gallery":["assets/images/aitu-1.jpg"],
-      "partners":[{"partner_name":"SAP University Alliances","country":"Germany"}],
-      "tour":"https://tour.astanait.edu.kz"
-    }
-  ]
-};
-</script>
-<!-- ВСТАВЬ ЭТО ПЕРЕД СКРИПТОМ ЗАГРУЗКИ/PAGE LOGIC В university.html -->
-<script>
-/* Встроенная локальная база университетов.
-   Это временное и безопасное решение — работает при открытии файлов по file://
-   (устраняет проблему CORS / блокировку fetch). */
 window.UNIVERSITIES_DB = {
   "universities": [
     {
@@ -248,9 +175,13 @@ window.UNIVERSITIES_DB = {
       "faculty_count": 2000,
       "programs_count": 180,
       "contact": { "phone": "+7 (727) 377-33-33", "email": "info@kaznu.edu.kz", "address": "пр. Аль-Фараби, 71, Алматы" },
-      "gallery": ["assets/images/kaznu-1.jpg"],
-      "partners": [{"partner_name":"University of Cambridge","country":"UK"}],
-      "tour": ""
+      "gallery": ["assets/images/kaznu-1.jpg", "assets/images/kaznu-2.jpg"],
+      "partners": [
+        {"partner_name":"University of Cambridge","country":"United Kingdom"},
+        {"partner_name":"Lomonosov Moscow State University","country":"Russia"},
+        {"partner_name":"Universidad de Salamanca","country":"Spain"}
+      ],
+      "tour": "https://3dtour.kaznu.kz"
     },
     {
       "id": "aues",
@@ -264,7 +195,11 @@ window.UNIVERSITIES_DB = {
       "programs_count": 60,
       "contact": { "phone": "+7 (727) 323-11-75", "email": "aues@aues.kz", "address": "ул. Байтурсынова, 126/1, Алматы" },
       "gallery": ["assets/images/aues-1.jpg"],
-      "partners": [{"partner_name":"Anhalt University","country":"Germany"}],
+      "partners": [
+        {"partner_name":"Anhalt University of Applied Sciences","country":"Germany"},
+        {"partner_name":"Tampere University","country":"Finland"},
+        {"partner_name":"Beijing University of Posts and Telecommunications","country":"China"}
+      ],
       "tour": ""
     },
     {
@@ -279,12 +214,16 @@ window.UNIVERSITIES_DB = {
       "programs_count": 50,
       "contact": { "phone": "+7 (727) 357-42-42", "email": "info@kbtu.kz", "address": "ул. Толе Би, 59, Алматы" },
       "gallery": ["assets/images/kbtu-1.jpg"],
-      "partners": [{"partner_name":"London School of Economics","country":"UK"}],
+      "partners": [
+        {"partner_name":"London School of Economics (LSE)","country":"United Kingdom"},
+        {"partner_name":"University of Strathclyde","country":"United Kingdom"},
+        {"partner_name":"Heriot-Watt University","country":"United Kingdom"}
+      ],
       "tour": ""
     },
     {
       "id": "iitu",
-      "name": "Международный университет информационных технологий (МУИТ)",
+      "name": "Международный университет информационных технологий (МУИТ / IITU)",
       "city": "Алматы",
       "rating": 88,
       "short_desc": "Университет с акцентом на ИТ-образование и международные программы.",
@@ -294,7 +233,11 @@ window.UNIVERSITIES_DB = {
       "programs_count": 40,
       "contact": { "phone": "+7 (727) 320-00-00", "email": "reception@iitu.edu.kz", "address": "ул. Манаса, 34/1, Алматы" },
       "gallery": ["assets/images/iitu-1.jpg"],
-      "partners": [{"partner_name":"KAIST","country":"South Korea"}],
+      "partners": [
+        {"partner_name":"KAIST","country":"South Korea"},
+        {"partner_name":"National University of Singapore (NUS)","country":"Singapore"},
+        {"partner_name":"University of Oulu","country":"Finland"}
+      ],
       "tour": ""
     },
     {
@@ -309,14 +252,18 @@ window.UNIVERSITIES_DB = {
       "programs_count": 30,
       "contact": { "phone": "+7 (7172) 645-710", "email": "info@astanait.edu.kz", "address": "пр. Мәңгілік Ел, Астана" },
       "gallery": ["assets/images/aitu-1.jpg"],
-      "partners": [{"partner_name":"SAP University Alliances","country":"Germany"}],
+      "partners": [
+        {"partner_name":"SAP University Alliances","country":"Germany"},
+        {"partner_name":"Edinburgh Napier University","country":"United Kingdom"},
+        {"partner_name":"Hasso Plattner Institute (HPI)","country":"Germany"}
+      ],
       "tour": ""
     }
   ]
 };
 </script>
 
-<!-- REPLACE PAGE LOGIC: robust loader for university.html -->
+<!-- PAGE LOGIC: robust loader for university.html -->
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
   // helper to show message on page
@@ -330,136 +277,125 @@ document.addEventListener("DOMContentLoaded", async () => {
   let id = params.get("id");
   if (id) id = decodeURIComponent(String(id)).trim();
 
-  console.log("[university.html] requested id:", id);
-
   // if no id => show list of universities (linking to profiles)
   if (!id) {
     try {
-      // try DataHub list first
+      // 1) Try DataHub.list
       if (window.DataHub && typeof DataHub.fetchUniversities === "function") {
         const list = await DataHub.fetchUniversities();
         if (Array.isArray(list) && list.length) {
-          document.getElementById('uniContainer').innerHTML = "";
-          const header = document.createElement('div');
-          header.className = 'card';
-          header.innerHTML = '<h2>Выберите университет</h2><p class="muted-note">Нажмите на вуз, чтобы открыть профиль.</p>';
-          document.getElementById('uniContainer').appendChild(header);
-          const grid = document.createElement('div');
-          grid.style.display = 'grid';
-          grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(300px,1fr))';
-          grid.style.gap = '12px';
-          grid.style.marginTop = '12px';
-          list.forEach(u => {
-            const c = document.createElement('div');
-            c.className = 'card';
-            c.innerHTML = `
-              <a href="university.html?id=${encodeURIComponent(u.id)}" style="text-decoration:none;color:inherit">
-                <strong>${u.name}</strong><div class="muted-note">${u.city || ''} · рейтинг: ${u.rating ?? '—'}</div>
-                <p class="muted-note">${(u.short_desc||'').substring(0,150)}</p>
-              </a>`;
-            grid.appendChild(c);
-          });
-          document.getElementById('uniContainer').appendChild(grid);
+          renderUniversityList(list);
           return;
         }
       }
 
-      // if DataHub not present or empty, attempt to load local JSON
-      const resp = await fetch('assets/data/universities.json');
-      if (resp.ok) {
-        const db = await resp.json();
-        const list = db.universities || [];
-        if (list.length) {
-          document.getElementById('uniContainer').innerHTML = "";
-          const header = document.createElement('div');
-          header.className = 'card';
-          header.innerHTML = '<h2>Выберите университет</h2><p class="muted-note">Нажмите на вуз, чтобы открыть профиль.</p>';
-          document.getElementById('uniContainer').appendChild(header);
-          const grid = document.createElement('div');
-          grid.style.display = 'grid';
-          grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(300px,1fr))';
-          grid.style.gap = '12px';
-          grid.style.marginTop = '12px';
-          list.forEach(u => {
-            const c = document.createElement('div');
-            c.className = 'card';
-            c.innerHTML = `
-              <a href="university.html?id=${encodeURIComponent(u.id)}" style="text-decoration:none;color:inherit">
-                <strong>${u.name}</strong><div class="muted-note">${u.city || ''} · рейтинг: ${u.rating ?? '—'}</div>
-                <p class="muted-note">${(u.short_desc||'').substring(0,150)}</p>
-              </a>`;
-            grid.appendChild(c);
-          });
-          document.getElementById('uniContainer').appendChild(grid);
-          return;
-        }
+      // 2) Else try embedded DB
+      if (window.UNIVERSITIES_DB && Array.isArray(window.UNIVERSITIES_DB.universities) && window.UNIVERSITIES_DB.universities.length) {
+        renderUniversityList(window.UNIVERSITIES_DB.universities);
+        return;
       }
 
+      // 3) Else try local JSON
+      try {
+        const resp = await fetch('assets/data/universities.json');
+        if (resp.ok) {
+          const db = await resp.json();
+          const arr = db.universities || [];
+          if (arr.length) { renderUniversityList(arr); return; }
+        }
+      } catch (e) {
+        // ignore - will show message below
+      }
+
+      showMessage("Список университетов пуст или недоступен.");
+      return;
     } catch (err) {
       console.error("Ошибка при загрузке списка вузов:", err);
       showMessage("Не удалось загрузить список университетов.");
       return;
     }
-
-    showMessage("Список университетов пуст.");
-    return;
   }
 
   // -- if id present: try to load university data from multiple sources robustly --
   try {
     // 1) Try DataHub.fetchUniversityById if available
     if (window.DataHub && typeof DataHub.fetchUniversityById === "function") {
-      console.log("[university.html] trying DataHub.fetchUniversityById...");
       const uni = await DataHub.fetchUniversityById(id);
-      if (uni) {
-        console.log("[university.html] found via DataHub:", uni.id);
-        renderUniversity(uni);
-        return;
-      }
-      console.warn("[university.html] DataHub didn't return university for id:", id);
+      if (uni) { renderUniversity(uni); return; }
     }
 
     // 2) Try window.UNIVERSITIES_DB (embedded)
     if (window.UNIVERSITIES_DB && Array.isArray(window.UNIVERSITIES_DB.universities)) {
-      const found = window.UNIVERSITIES_DB.universities.find(u => String(u.id) === String(id));
+      const found = window.UNIVERSITIES_DB.universities.find(u => String(u.id).toLowerCase() === String(id).toLowerCase());
       if (found) { renderUniversity(found); return; }
-      console.warn("[university.html] window.UNIVERSITIES_DB has no entry for id:", id);
     }
 
     // 3) Try local JSON file
-    console.log("[university.html] fetching assets/data/universities.json");
-    const resp = await fetch('assets/data/universities.json');
-    if (resp.ok) {
-      const db = await resp.json();
-      const u = (db.universities || []).find(x => String(x.id) === String(id));
-      if (u) { renderUniversity(u); return; }
-      console.warn("[university.html] assets/data/universities.json has no entry for id:", id);
-    } else {
-      console.warn("[university.html] assets/data/universities.json fetch status:", resp.status);
+    try {
+      const resp = await fetch('assets/data/universities.json');
+      if (resp.ok) {
+        const db = await resp.json();
+        const u = (db.universities || []).find(x => String(x.id).toLowerCase() === String(id).toLowerCase());
+        if (u) { renderUniversity(u); return; }
+      }
+    } catch (e) {
+      // ignore
     }
 
-    // 4) Last resort: try backend API path (if your project had one)
+    // 4) Try backend API path (if present)
     try {
       const apiResp = await fetch(`/api/universities/${encodeURIComponent(id)}`);
       if (apiResp.ok) {
         const uni = await apiResp.json();
         if (uni && uni.id) { renderUniversity(uni); return; }
-      } else {
-        console.warn("[university.html] backend /api/universities returned status", apiResp.status);
       }
     } catch (e) {
-      console.warn("[university.html] backend fetch failed", e);
+      // ignore
     }
 
     // nothing found
-    console.error("University not found for id:", id);
-    showMessage("Университет не найден (проверь параметр ?id=...). Открой консоль разработчика для деталей.");
+    showMessage("Университет не найден (проверьте параметр ?id=...).");
+    console.warn("University not found for id:", id);
     return;
 
   } catch (err) {
     console.error("Ошибка при загрузке данных университета:", err);
     showMessage("Ошибка при загрузке данных университета. Смотри консоль.");
     return;
+  }
+
+  // ---- helper: render university list (when no id) ----
+  function renderUniversityList(list) {
+    const container = document.getElementById('uniContainer');
+    container.innerHTML = "";
+    const header = document.createElement('div');
+    header.className = 'card';
+    header.innerHTML = '<h2>Выберите университет</h2><p class="muted-note">Нажмите на вуз, чтобы открыть профиль.</p>';
+    container.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(300px,1fr))';
+    grid.style.gap = '12px';
+    grid.style.marginTop = '12px';
+
+    list.forEach(u => {
+      const c = document.createElement('div');
+      c.className = 'card';
+      const name = escapeHtml(u.name || u.title || '—');
+      const city = escapeHtml(u.city || '');
+      const rating = u.rating ?? '—';
+      const short = escapeHtml((u.short_desc||'').substring(0,150));
+      c.innerHTML = `
+        <a href="university.html?id=${encodeURIComponent(u.id)}" style="text-decoration:none;color:inherit">
+          <strong>${name}</strong>
+          <div class="muted-note">${city} · рейтинг: ${rating}</div>
+          <p class="muted-note">${short}</p>
+        </a>`;
+      grid.appendChild(c);
+    });
+
+    container.appendChild(grid);
   }
 
   // ---- helper: render university object into DOM ----
@@ -474,48 +410,63 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("numStudents").textContent = uni.student_count ?? "—";
     document.getElementById("numFaculty").textContent = uni.faculty_count ?? "—";
-    document.getElementById("numPrograms").textContent = uni.programs_count ?? "—";
+    document.getElementById("numPrograms").textContent = (Array.isArray(uni.programs) ? uni.programs.length : uni.programs_count) ?? "—";
 
     // Contact
-    let c = "";
+    let cHtml = "";
     if (uni.contact) {
       const obj = (typeof uni.contact === "string") ? (() => { try { return JSON.parse(uni.contact); } catch { return null; } })() : uni.contact;
-      if (obj) {
-        c = `${obj.phone ? `<div>📞 ${obj.phone}</div>` : ""}${obj.email ? `<div>✉️ <a href="mailto:${obj.email}">${obj.email}</a></div>` : ""}${obj.address ? `<div>📍 ${obj.address}</div>` : ""}`;
-      } else c = String(uni.contact);
+      if (obj && typeof obj === 'object') {
+        if (obj.phone) cHtml += `<div>📞 ${escapeHtml(obj.phone)}</div>`;
+        if (obj.email) cHtml += `<div>✉️ <a href="mailto:${escapeAttr(obj.email)}">${escapeHtml(obj.email)}</a></div>`;
+        if (obj.address) cHtml += `<div>📍 ${escapeHtml(obj.address)}</div>`;
+      } else {
+        cHtml = escapeHtml(uni.contact);
+      }
     }
-    document.getElementById("uniContact").innerHTML = c || "Нет данных";
+    document.getElementById("uniContact").innerHTML = cHtml || "Нет данных";
 
     // Gallery
     const gal = document.getElementById("gallery"); gal.innerHTML = "";
     const images = Array.isArray(uni.gallery) ? uni.gallery : (uni.gallery ? [uni.gallery] : []);
     if (!images.length) gal.innerHTML = "<p class='muted-note'>Фотографии отсутствуют.</p>";
-    else images.forEach(src => { const img=document.createElement('img'); img.src=src; img.alt=uni.name||"Фото"; gal.appendChild(img); });
+    else images.forEach(src => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = (uni.name || "Фото университета");
+      gal.appendChild(img);
+    });
 
     // Partners
     const pl = document.getElementById("uniPartners"); pl.innerHTML = "";
     if (Array.isArray(uni.partners) && uni.partners.length) {
       uni.partners.forEach(p => {
         const div = document.createElement('div');
-        const country = p.country ? ` — <span class="muted-note">${p.country}</span>` : "";
-        div.innerHTML = `<strong>${p.partner_name}</strong>${country}`;
+        const country = p.country ? ` — <span class="muted-note">${escapeHtml(p.country)}</span>` : "";
+        div.innerHTML = `<strong>${escapeHtml(p.partner_name || p.name || '—')}</strong>${country}`;
         pl.appendChild(div);
       });
     } else pl.innerHTML = "<p class='muted-note'>Партнёров нет.</p>";
 
     // optional 3D tour
     if (uni.tour) {
-      const tourBlock = document.createElement('div');
-      tourBlock.style.marginTop = '14px';
-      tourBlock.innerHTML = `<a class="btn ghost" href="${uni.tour}" target="_blank">Посмотреть 3D-тур</a>`;
-      gal.parentElement.appendChild(tourBlock);
+      let tourBlock = document.getElementById('uniTourBlock');
+      if (!tourBlock) {
+        tourBlock = document.createElement('div');
+        tourBlock.id = 'uniTourBlock';
+        tourBlock.style.marginTop = '14px';
+        gal.parentElement.appendChild(tourBlock);
+      }
+      tourBlock.innerHTML = `<a class="btn ghost" href="${escapeAttr(uni.tour)}" target="_blank" rel="noopener">Посмотреть 3D-тур</a>`;
     }
   }
 
+  // escape helpers
+  function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escapeAttr(s){ return String(s||'').replace(/"/g,'&quot;'); }
+
 });
 </script>
-
-
 
 </body>
 </html>
